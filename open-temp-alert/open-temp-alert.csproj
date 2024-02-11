@@ -58,7 +58,8 @@
         <Compile Include="src\forms\MainForm.Designer.cs">
           <DependentUpon>MainForm.cs</DependentUpon>
         </Compile>
-        <Compile Include="src\services\HardwareService.cs" />
+        <Compile Include="src\models\TemperatureSnapshot.cs" />
+        <Compile Include="src\services\TemperatureService.cs" />
         <EmbeddedResource Include="Properties\Resources.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -86,7 +87,6 @@
         <None Include="App.config"/>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="src\models\" />
       <Folder Include="src\repos\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

@@ -41,9 +41,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(175, 31);
+            this.label1.Size = new System.Drawing.Size(115, 31);
             this.label1.TabIndex = 0;
-            this.label1.Text = "CPU: Loading..";
+            this.label1.Text = "Loading..";
             // 
             // timer1
             // 
@@ -56,8 +56,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(430, 201);
+            this.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ClientSize = new System.Drawing.Size(507, 201);
             this.Controls.Add(this.label1);
             this.Name = "MainForm";
             this.ShowIcon = false;

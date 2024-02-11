@@ -1,4 +1,4 @@
-﻿namespace open_temp_alert
+﻿namespace open_temp_alert.forms
 {
     partial class MainForm
     {

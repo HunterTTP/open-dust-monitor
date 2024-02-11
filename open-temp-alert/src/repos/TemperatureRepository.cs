@@ -62,12 +62,11 @@ namespace open_temp_alert.repos
 
         private static TemperatureSnapshot MapCsvRowToTemperatureSnapshot(string[] csvRowValues)
         {
-            var temperatureSnapshot = new TemperatureSnapshot(
+            return new TemperatureSnapshot(
                 DateTime.Parse(csvRowValues[0]),
                 csvRowValues[1],
                 csvRowValues[2],
                 float.Parse(csvRowValues[3]));
-            return temperatureSnapshot;
         }
     }
 }

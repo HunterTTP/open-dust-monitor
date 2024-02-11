@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Timers;
 using System.Windows.Forms;
-using open_temp_alert.repos;
 using open_temp_alert.services;
 
 namespace open_temp_alert.forms
@@ -9,19 +8,16 @@ namespace open_temp_alert.forms
     public partial class MainForm : Form
     {
         private readonly TemperatureService _temperatureService;
-        private readonly TemperatureRepository _temperatureRepository;
 
         public MainForm()
         {
             InitializeComponent();
             FormClosing += MainForm_FormClosing;
             _temperatureService = new TemperatureService();
-            _temperatureRepository = new TemperatureRepository();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            _temperatureRepository.EnsureTemperatureHistoryCsvExists();
             UpdateFormWithCpuInfo();
         }
 

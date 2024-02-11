@@ -16,5 +16,10 @@ namespace open_temp_alert.models
             SensorName = sensorName;
             Temperature = temperature;
         }
+
+        public string GetAsCsvRow()
+        {
+            return Timestamp + "," + CpuName + "," + SensorName + "," + Temperature;
+        }
     }
 }

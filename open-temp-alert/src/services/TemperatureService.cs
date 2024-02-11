@@ -2,6 +2,7 @@
 using System.Linq;
 using LibreHardwareMonitor.Hardware;
 using open_temp_alert.models;
+using open_temp_alert.repos;
 
 namespace open_temp_alert.services
 {
@@ -10,33 +11,26 @@ namespace open_temp_alert.services
         private readonly Computer _computer;
         private readonly IHardware _cpu;
         private readonly ISensor _cpuPackageTempSensor;
+        private readonly TemperatureRepository _temperatureRepository;
 
         public TemperatureService()
         {
             _computer = FindComputerHardwareList();
             _cpu = FindCpu(_computer);
             _cpuPackageTempSensor = FindCpuPackageTempSensor(_cpu);
-        }
-
-        public IHardware GetCpu()
-        {
-            return _cpu;
+            _temperatureRepository = new TemperatureRepository();
         }
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
-            return new TemperatureSnapshot(
+            var latestTemperatureSnapshot = new TemperatureSnapshot(
                 DateTime.Now,
                 _cpu.Name,
                 _cpuPackageTempSensor.Name,
                 _cpuPackageTempSensor.Value.GetValueOrDefault(0)
             );
-        }
-
-        public float GetCpuPackageTemp()
-        {
-            _cpu.Update();
-            return _cpuPackageTempSensor.Value.GetValueOrDefault(0);
+            _temperatureRepository.SaveTemperatureSnapshot(latestTemperatureSnapshot);
+            return latestTemperatureSnapshot;
         }
 
         public void StopTemperatureMonitoring()

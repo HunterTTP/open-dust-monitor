@@ -31,6 +31,7 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.timer1 = new System.Timers.Timer();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.timer1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,16 +49,27 @@
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 1000D;
+            this.timer1.Interval = 300000D;
             this.timer1.SynchronizingObject = this;
             this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(12, 298);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(145, 42);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Take Snapshot";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.ClientSize = new System.Drawing.Size(507, 201);
+            this.ClientSize = new System.Drawing.Size(507, 352);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Name = "MainForm";
             this.ShowIcon = false;
@@ -68,6 +80,8 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Button button1;
 
         private System.Timers.Timer timer1;
 

@@ -43,6 +43,27 @@ namespace open_temp_alert.services
             _computer.Close();
         }
 
+        public bool IsTemperatureInsideAlertThreshold(float temperature)
+        {
+            return temperature <= GetAlertThresholdTemperature();
+        }
+
+        public float GetAlertThresholdTemperature()
+        {
+            return (float)Math.Round(GetBaselineTemperature() * 1.15f);
+        }
+
+        private float GetBaselineTemperature()
+        {
+            var temperatureSnapshots = _temperatureRepository.GetAllTemperatureSnapshots();
+            var endDate = temperatureSnapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
+            return temperatureSnapshots
+                .Where(snapshot => snapshot.Timestamp <= endDate)
+                .Select(snapshot => snapshot.Temperature)
+                .DefaultIfEmpty(0)
+                .Average();
+        }
+
         private static Computer FindComputerHardwareList()
         {
             var computer = new Computer { IsCpuEnabled = true };

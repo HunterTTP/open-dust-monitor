@@ -26,14 +26,24 @@ namespace open_temp_alert.forms
             UpdateFormWithCpuInfo();
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            UpdateFormWithCpuInfo();
+        }
+
         private void UpdateFormWithCpuInfo()
         {
-            var currentTemp = _temperatureService.GetLatestTemperatureSnapshot();
-            label1.Text = "CpuName: " + currentTemp.CpuName +
-                          "\nSensorName: " + currentTemp.SensorName +
-                          "\nTemperature: " + currentTemp.Temperature + "°C" +
-                          "\nTimestamp: " + currentTemp.Timestamp +
-                          "\nSaved Snapshots: " + _temperatureService.GetTotalTemperatureSnapshotCount();
+            var latestTemperatureSnapshot = _temperatureService.GetLatestTemperatureSnapshot();
+            var latestTemperature = latestTemperatureSnapshot.Temperature;
+            var totalTemperatureSnapshots = _temperatureService.GetTotalTemperatureSnapshotCount();
+            var alertThresholdTemperature = _temperatureService.GetAlertThresholdTemperature();
+            var isTemperatureWithinThreshold = _temperatureService.IsTemperatureInsideAlertThreshold(latestTemperature);
+            label1.Text = "CpuName: " + latestTemperatureSnapshot.CpuName +
+                          "\nCurrent Temp: " + latestTemperatureSnapshot.Temperature + "°C" +
+                          "\nAlert Threshold: " + alertThresholdTemperature + "°C" +
+                          "\nTemp is normal: " + isTemperatureWithinThreshold +
+                          "\nTimestamp: " + latestTemperatureSnapshot.Timestamp +
+                          "\nSaved Snapshots: " + totalTemperatureSnapshots;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

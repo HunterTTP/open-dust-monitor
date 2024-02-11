@@ -5,11 +5,11 @@ using LibreHardwareMonitor.Hardware;
 
 namespace open_temp_alert
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private Computer _computer;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
         }

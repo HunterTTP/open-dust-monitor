@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using open_temp_alert.models;
 
@@ -11,7 +12,7 @@ namespace open_temp_alert.repos
         public TemperatureRepository()
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            _pathToTemperatureHistoryCsv = Path.Combine(baseDirectory, "TemperatureHistory.csv");
+            _pathToTemperatureHistoryCsv = Path.Combine(baseDirectory, "temperature_history.csv");
             EnsureTemperatureHistoryCsvExists();
         }
 
@@ -39,6 +40,34 @@ namespace open_temp_alert.repos
             {
                 csvAppender.WriteLine(temperatureSnapshot.GetAsCsvRow());
             }
+        }
+
+        public List<TemperatureSnapshot> GetAllTemperatureSnapshots()
+        {
+            var temperatureSnapshots = new List<TemperatureSnapshot>();
+            using (var reader = new StreamReader(_pathToTemperatureHistoryCsv))
+            {
+                var headerRow = reader.ReadLine();
+                string csvRow;
+                while ((csvRow = reader.ReadLine()) != null)
+                {
+                    var csvRowValues = csvRow.Split(',');
+                    var temperatureSnapshot = MapCsvRowToTemperatureSnapshot(csvRowValues);
+                    temperatureSnapshots.Add(temperatureSnapshot);
+                }
+            }
+
+            return temperatureSnapshots;
+        }
+
+        private static TemperatureSnapshot MapCsvRowToTemperatureSnapshot(string[] csvRowValues)
+        {
+            var temperatureSnapshot = new TemperatureSnapshot(
+                DateTime.Parse(csvRowValues[0]),
+                csvRowValues[1],
+                csvRowValues[2],
+                float.Parse(csvRowValues[3]));
+            return temperatureSnapshot;
         }
     }
 }

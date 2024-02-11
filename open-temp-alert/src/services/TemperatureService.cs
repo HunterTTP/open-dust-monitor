@@ -33,6 +33,11 @@ namespace open_temp_alert.services
             return latestTemperatureSnapshot;
         }
 
+        public int GetTotalTemperatureSnapshotCount()
+        {
+            return _temperatureRepository.GetAllTemperatureSnapshots().Count;
+        }
+
         public void StopTemperatureMonitoring()
         {
             _computer.Close();

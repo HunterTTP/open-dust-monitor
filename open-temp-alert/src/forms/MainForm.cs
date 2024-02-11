@@ -32,7 +32,8 @@ namespace open_temp_alert.forms
             label1.Text = "CpuName: " + currentTemp.CpuName +
                           "\nSensorName: " + currentTemp.SensorName +
                           "\nTemperature: " + currentTemp.Temperature + "°C" +
-                          "\nTimestamp: " + currentTemp.Timestamp;
+                          "\nTimestamp: " + currentTemp.Timestamp +
+                          "\nSaved Snapshots: " + _temperatureService.GetTotalTemperatureSnapshotCount();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

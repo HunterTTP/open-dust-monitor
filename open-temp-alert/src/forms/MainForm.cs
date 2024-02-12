@@ -16,9 +16,14 @@ namespace open_temp_alert.forms
             _temperatureService = new TemperatureService();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             UpdateFormWithCpuInfo();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _temperatureService.StopTemperatureMonitoring();
         }
 
         private void timer1_Elapsed(object sender, ElapsedEventArgs e)
@@ -34,21 +39,33 @@ namespace open_temp_alert.forms
         private void UpdateFormWithCpuInfo()
         {
             var latestTemperatureSnapshot = _temperatureService.GetLatestTemperatureSnapshot();
-            var latestTemperature = latestTemperatureSnapshot.Temperature;
-            var totalTemperatureSnapshots = _temperatureService.GetTotalTemperatureSnapshotCount();
             var alertThresholdTemperature = _temperatureService.GetAlertThresholdTemperature();
-            var isTemperatureWithinThreshold = _temperatureService.IsTemperatureInsideAlertThreshold(latestTemperature);
+            var recentAverageTemperature = _temperatureService.GetRecentAverageTemperature();
+            var temperatureAverageIsOk = _temperatureService.IsRecentAverageTemperatureWithinThreshold();
+            var totalSnapshots = _temperatureService.GetTotalTemperatureSnapshotCount();
             label1.Text = "CpuName: " + latestTemperatureSnapshot.CpuName +
-                          "\nCurrent Temp: " + latestTemperatureSnapshot.Temperature + "°C" +
-                          "\nAlert Threshold: " + alertThresholdTemperature + "°C" +
-                          "\nTemp is normal: " + isTemperatureWithinThreshold +
-                          "\nTimestamp: " + latestTemperatureSnapshot.Timestamp +
-                          "\nSaved Snapshots: " + totalTemperatureSnapshots;
+                          "\nlatestTemperature: " + latestTemperatureSnapshot.Temperature + "°C" +
+                          "\nalertThresholdTemperature: " + alertThresholdTemperature + "°C" +
+                          "\nrecentAverageTemperature: " + recentAverageTemperature + "°C" +
+                          "\ntemperatureAverageIsOk: " + temperatureAverageIsOk +
+                          "\nLatest Timestamp: " + latestTemperatureSnapshot.Timestamp +
+                          "\nTotal Snapshots: " + totalSnapshots;
+            AlertIfTemperatureIsOutsideThreshold();
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void AlertIfTemperatureIsOutsideThreshold()
         {
-            _temperatureService.StopTemperatureMonitoring();
+            if (!_temperatureService.IsRecentAverageTemperatureWithinThreshold())
+            {
+                MessageBox.Show(
+                    "Your PC has running warmer than usual. Please clean the fans.",
+                    "Open Temp Alert",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.DefaultDesktopOnly
+                );
+            }
         }
     }
 }

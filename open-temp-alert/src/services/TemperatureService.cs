@@ -43,9 +43,9 @@ namespace open_temp_alert.services
             _computer.Close();
         }
 
-        public bool IsTemperatureInsideAlertThreshold(float temperature)
+        public bool IsRecentAverageTemperatureWithinThreshold()
         {
-            return temperature <= GetAlertThresholdTemperature();
+            return GetRecentAverageTemperature() <= GetAlertThresholdTemperature();
         }
 
         public float GetAlertThresholdTemperature()
@@ -62,6 +62,18 @@ namespace open_temp_alert.services
                 .Select(snapshot => snapshot.Temperature)
                 .DefaultIfEmpty(0)
                 .Average();
+        }
+
+        public float GetRecentAverageTemperature()
+        {
+            var temperatureSnapshots = _temperatureRepository.GetAllTemperatureSnapshots();
+            var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-3);
+            var recentAverageTemperature = temperatureSnapshots
+                .Where(snapshot => snapshot.Timestamp >= endDate)
+                .Select(snapshot => snapshot.Temperature)
+                .DefaultIfEmpty(0)
+                .Average();
+            return (float)Math.Round(recentAverageTemperature);
         }
 
         private static Computer FindComputerHardwareList()

@@ -47,7 +47,7 @@ namespace open_temp_alert.repos
             var temperatureSnapshots = new List<TemperatureSnapshot>();
             using (var reader = new StreamReader(_pathToTemperatureHistoryCsv))
             {
-                var headerRow = reader.ReadLine();
+                reader.ReadLine(); //skip header
                 string csvRow;
                 while ((csvRow = reader.ReadLine()) != null)
                 {

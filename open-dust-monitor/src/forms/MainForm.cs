@@ -49,6 +49,7 @@ namespace open_temp_alert.forms
                           "\nrecentAverageTemperature: " + recentAverageTemperature + "°C" +
                           "\ntemperatureAverageIsOk: " + temperatureAverageIsOk +
                           "\nLatest Timestamp: " + latestTemperatureSnapshot.Timestamp +
+                          "\ntimer1_Interval: " + timer1.Interval / 60000 + " minutes" +
                           "\nTotal Snapshots: " + totalSnapshots;
             AlertIfTemperatureIsOutsideThreshold();
         }

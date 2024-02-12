@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "open-temp-alert", "open-temp-alert.csproj", "{313ED3B5-2B90-4D25-BD9E-FB6D81C815C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "open-dust-monitor", "open-dust-monitor.csproj", "{313ED3B5-2B90-4D25-BD9E-FB6D81C815C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,11 +4,6 @@ namespace open_dust_monitor.models
 {
     public class TemperatureSnapshot
     {
-        public DateTime Timestamp { get; }
-        public string CpuName { get; }
-        public float CpuPackageUtilization { get; }
-        public float CpuPackageTemperature { get; }
-
         public TemperatureSnapshot(
             DateTime timestamp,
             string cpuName,
@@ -20,6 +15,11 @@ namespace open_dust_monitor.models
             CpuPackageUtilization = cpuPackageUtilization;
             CpuPackageTemperature = cpuPackageTemperature;
         }
+
+        public DateTime Timestamp { get; }
+        public string CpuName { get; }
+        public float CpuPackageUtilization { get; }
+        public float CpuPackageTemperature { get; }
 
         public static string GetCsvRowHeaders()
         {

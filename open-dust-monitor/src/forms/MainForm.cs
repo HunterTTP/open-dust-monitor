@@ -7,14 +7,12 @@ namespace open_dust_monitor.forms
 {
     public partial class MainForm : Form
     {
-        private readonly HardwareService _hardwareService;
         private readonly TemperatureService _temperatureService;
 
         public MainForm()
         {
             InitializeComponent();
             FormClosing += MainForm_FormClosing;
-            _hardwareService = new HardwareService();
             _temperatureService = new TemperatureService();
         }
 
@@ -25,7 +23,7 @@ namespace open_dust_monitor.forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _hardwareService.StopTemperatureMonitoring();
+            _temperatureService.StopTemperatureMonitoring();
         }
 
         private void timer1_Elapsed_1(object sender, ElapsedEventArgs e)
@@ -59,7 +57,6 @@ namespace open_dust_monitor.forms
         private void AlertIfTemperatureIsOutsideThreshold()
         {
             if (!_temperatureService.IsRecentAverageTemperatureWithinThreshold())
-            {
                 MessageBox.Show(
                     "Your PC has running warmer than usual. Please clean the fans.",
                     "Open Dust Monitor",
@@ -68,7 +65,6 @@ namespace open_dust_monitor.forms
                     MessageBoxDefaultButton.Button1,
                     MessageBoxOptions.DefaultDesktopOnly
                 );
-            }
         }
     }
 }

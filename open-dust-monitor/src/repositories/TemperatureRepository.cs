@@ -19,7 +19,6 @@ namespace open_dust_monitor.repositories
         private void EnsureTemperatureHistoryCsvExists()
         {
             if (!File.Exists(_pathToTemperatureHistoryCsv))
-            {
                 try
                 {
                     var newTemperatureHistoryCsv = File.Create(_pathToTemperatureHistoryCsv);
@@ -31,7 +30,6 @@ namespace open_dust_monitor.repositories
                 {
                     throw new FileLoadException("Could not create TemperatureHistoryCsv: " + ex);
                 }
-            }
         }
 
         public void SaveTemperatureSnapshot(TemperatureSnapshot temperatureSnapshot)

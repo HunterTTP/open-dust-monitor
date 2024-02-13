@@ -59,5 +59,10 @@ namespace open_dust_monitor.services
                 .Average();
             return (float)Math.Round(recentAverageTemperature);
         }
+
+        public void StopTemperatureMonitoring()
+        {
+            _hardwareService.StopHardwareMonitoring();
+        }
     }
 }

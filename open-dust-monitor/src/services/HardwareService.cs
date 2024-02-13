@@ -8,8 +8,8 @@ namespace open_dust_monitor.services
     {
         private readonly Computer _thisComputer;
         private readonly IHardware _thisCpu;
-        private readonly ISensor _thisCpuTemperatureSensor;
         private readonly ISensor _thisCpuLoadSensor;
+        private readonly ISensor _thisCpuTemperatureSensor;
 
         public HardwareService()
         {
@@ -44,10 +44,7 @@ namespace open_dust_monitor.services
         private static IHardware FindCpu(IComputer computer)
         {
             var cpu = computer.Hardware.Where(IsCpu).First();
-            if (cpu == null)
-            {
-                throw new InvalidOperationException("No CPU found.");
-            }
+            if (cpu == null) throw new InvalidOperationException("No CPU found.");
 
             return cpu;
         }
@@ -60,10 +57,7 @@ namespace open_dust_monitor.services
         private static ISensor FindCpuPackageTempSensor(IHardware cpu)
         {
             var cpuPackageTempSensor = cpu.Sensors.Where(IsCpuPackageTempSensor).First();
-            if (cpuPackageTempSensor == null)
-            {
-                throw new Exception("No CPU Temperature sensor found.");
-            }
+            if (cpuPackageTempSensor == null) throw new Exception("No CPU Temperature sensor found.");
 
             return cpuPackageTempSensor;
         }
@@ -77,10 +71,7 @@ namespace open_dust_monitor.services
         private static ISensor FindCpuPackageLoadSensor(IHardware cpu)
         {
             var cpuPackageLoadSensor = cpu.Sensors.Where(IsCpuLoadSensor).First();
-            if (cpuPackageLoadSensor == null)
-            {
-                throw new Exception("No CPU Load sensor found.");
-            }
+            if (cpuPackageLoadSensor == null) throw new Exception("No CPU Load sensor found.");
 
             return cpuPackageLoadSensor;
         }
@@ -91,7 +82,7 @@ namespace open_dust_monitor.services
                    && (sensor.Name == "CPU Package" || sensor.Name == "CPU Total");
         }
 
-        public void StopTemperatureMonitoring()
+        public void StopHardwareMonitoring()
         {
             _thisComputer.Close();
         }

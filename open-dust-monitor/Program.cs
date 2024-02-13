@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using open_temp_alert.forms;
+using open_dust_monitor.forms;
 
-namespace open_temp_alert
+namespace open_dust_monitor
 {
     static class Program
     {

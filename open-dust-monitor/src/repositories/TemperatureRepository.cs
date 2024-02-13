@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using open_temp_alert.models;
+using open_dust_monitor.models;
 
-namespace open_temp_alert.repos
+namespace open_dust_monitor.repositories
 {
     public class TemperatureRepository
     {
@@ -24,7 +24,7 @@ namespace open_temp_alert.repos
                 {
                     var newTemperatureHistoryCsv = File.Create(_pathToTemperatureHistoryCsv);
                     var historyCsvWriter = new StreamWriter(newTemperatureHistoryCsv);
-                    historyCsvWriter.WriteLine("Timestamp,CpuName,SensorName,Temperature");
+                    historyCsvWriter.WriteLine(TemperatureSnapshot.GetCsvRowHeaders());
                     historyCsvWriter.Close();
                 }
                 catch (Exception ex)
@@ -65,8 +65,9 @@ namespace open_temp_alert.repos
             return new TemperatureSnapshot(
                 DateTime.Parse(csvRowValues[0]),
                 csvRowValues[1],
-                csvRowValues[2],
-                float.Parse(csvRowValues[3]));
+                float.Parse(csvRowValues[2]),
+                float.Parse(csvRowValues[3])
+            );
         }
     }
 }

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Linq;
 using LibreHardwareMonitor.Hardware;
-using open_temp_alert.models;
-using open_temp_alert.repos;
+using open_dust_monitor.models;
+using open_dust_monitor.repositories;
 
-namespace open_temp_alert.services
+namespace open_dust_monitor.services
 {
     public class TemperatureService
     {
         private readonly Computer _computer;
         private readonly IHardware _cpu;
         private readonly ISensor _cpuPackageTempSensor;
+        private readonly ISensor _cpuPackageLoadSensor;
         private readonly TemperatureRepository _temperatureRepository;
 
         public TemperatureService()
@@ -18,6 +19,7 @@ namespace open_temp_alert.services
             _computer = FindComputerHardwareList();
             _cpu = FindCpu(_computer);
             _cpuPackageTempSensor = FindCpuPackageTempSensor(_cpu);
+            _cpuPackageLoadSensor = FindCpuPackageLoadSensor(_cpu);
             _temperatureRepository = new TemperatureRepository();
         }
 
@@ -26,7 +28,7 @@ namespace open_temp_alert.services
             var latestTemperatureSnapshot = new TemperatureSnapshot(
                 DateTime.Now,
                 _cpu.Name,
-                _cpuPackageTempSensor.Name,
+                _cpuPackageLoadSensor.Value.GetValueOrDefault(0),
                 _cpuPackageTempSensor.Value.GetValueOrDefault(0)
             );
             _temperatureRepository.SaveTemperatureSnapshot(latestTemperatureSnapshot);
@@ -59,7 +61,7 @@ namespace open_temp_alert.services
             var endDate = temperatureSnapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
             return temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp <= endDate)
-                .Select(snapshot => snapshot.Temperature)
+                .Select(snapshot => snapshot.CpuPackageTemperature)
                 .DefaultIfEmpty(0)
                 .Average();
         }
@@ -70,7 +72,7 @@ namespace open_temp_alert.services
             var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-3);
             var recentAverageTemperature = temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp >= endDate)
-                .Select(snapshot => snapshot.Temperature)
+                .Select(snapshot => snapshot.CpuPackageTemperature)
                 .DefaultIfEmpty(0)
                 .Average();
             return (float)Math.Round(recentAverageTemperature);
@@ -101,18 +103,35 @@ namespace open_temp_alert.services
 
         private static ISensor FindCpuPackageTempSensor(IHardware cpu)
         {
-            var cpuPackageTempSensor = cpu.Sensors.Where(IsCpuPackageTemp).First();
+            var cpuPackageTempSensor = cpu.Sensors.Where(IsCpuPackageTempSensor).First();
             if (cpuPackageTempSensor == null)
             {
-                throw new InvalidOperationException("No CPU Package Temp sensor found.");
+                throw new Exception("No CPU Package Temp sensor found.");
             }
 
             return cpuPackageTempSensor;
         }
 
-        private static bool IsCpuPackageTemp(ISensor sensor)
+        private static bool IsCpuPackageTempSensor(ISensor sensor)
         {
             return sensor.SensorType == SensorType.Temperature && sensor.Name.Equals("CPU Package");
+        }
+
+        private ISensor FindCpuPackageLoadSensor(IHardware cpu)
+        {
+            var cpuPackageLoadSensor = cpu.Sensors.Where(IsCpuLoadSensor).First();
+            if (cpuPackageLoadSensor == null)
+            {
+                throw new Exception("No CPU Load sensor found.");
+            }
+
+            return cpuPackageLoadSensor;
+        }
+
+        private bool IsCpuLoadSensor(ISensor sensor)
+        {
+            Console.WriteLine(sensor.Name);
+            return sensor.SensorType == SensorType.Load;
         }
     }
 }

@@ -4,10 +4,10 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{313ED3B5-2B90-4D25-BD9E-FB6D81C815C9}</ProjectGuid>
+        <ProjectGuid>{41E68F4B-A1F7-474A-B2DA-8D02FE5E07A3}</ProjectGuid>
         <OutputType>WinExe</OutputType>
-        <RootNamespace>open_temp_alert</RootNamespace>
-        <AssemblyName>open_temp_alert</AssemblyName>
+        <RootNamespace>open_dust_monitor</RootNamespace>
+        <AssemblyName>open_dust_monitor</AssemblyName>
         <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,10 +33,16 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="HidSharp, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>packages\HidSharp.2.1.0\lib\net35\HidSharp.dll</HintPath>
+        </Reference>
         <Reference Include="LibreHardwareMonitorLib, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
           <HintPath>packages\LibreHardwareMonitorLib.0.9.3\lib\net472\LibreHardwareMonitorLib.dll</HintPath>
         </Reference>
         <Reference Include="System"/>
+        <Reference Include="System.CodeDom, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+          <HintPath>packages\System.CodeDom.8.0.0\lib\net462\System.CodeDom.dll</HintPath>
+        </Reference>
         <Reference Include="System.Core"/>
         <Reference Include="System.Management" />
         <Reference Include="System.Xml.Linq"/>
@@ -59,7 +65,7 @@
           <DependentUpon>MainForm.cs</DependentUpon>
         </Compile>
         <Compile Include="src\models\TemperatureSnapshot.cs" />
-        <Compile Include="src\repos\TemperatureRepository.cs" />
+        <Compile Include="src\repositories\TemperatureRepository.cs" />
         <Compile Include="src\services\TemperatureService.cs" />
         <EmbeddedResource Include="Properties\Resources.resx">
             <Generator>ResXFileCodeGenerator</Generator>

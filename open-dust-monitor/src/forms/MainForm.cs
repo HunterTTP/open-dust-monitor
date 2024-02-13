@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Timers;
 using System.Windows.Forms;
-using open_temp_alert.services;
+using open_dust_monitor.services;
 
-namespace open_temp_alert.forms
+namespace open_dust_monitor.forms
 {
     public partial class MainForm : Form
     {
@@ -16,7 +16,7 @@ namespace open_temp_alert.forms
             _temperatureService = new TemperatureService();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Load_1(object sender, EventArgs e)
         {
             UpdateFormWithCpuInfo();
         }
@@ -26,12 +26,12 @@ namespace open_temp_alert.forms
             _temperatureService.StopTemperatureMonitoring();
         }
 
-        private void timer1_Elapsed(object sender, ElapsedEventArgs e)
+        private void timer1_Elapsed_1(object sender, ElapsedEventArgs e)
         {
             UpdateFormWithCpuInfo();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click_1(object sender, EventArgs e)
         {
             UpdateFormWithCpuInfo();
         }
@@ -44,7 +44,7 @@ namespace open_temp_alert.forms
             var temperatureAverageIsOk = _temperatureService.IsRecentAverageTemperatureWithinThreshold();
             var totalSnapshots = _temperatureService.GetTotalTemperatureSnapshotCount();
             label1.Text = "CpuName: " + latestTemperatureSnapshot.CpuName +
-                          "\nlatestTemperature: " + latestTemperatureSnapshot.Temperature + "°C" +
+                          "\nlatestTemperature: " + latestTemperatureSnapshot.CpuPackageTemperature + "°C" +
                           "\nalertThresholdTemperature: " + alertThresholdTemperature + "°C" +
                           "\nrecentAverageTemperature: " + recentAverageTemperature + "°C" +
                           "\ntemperatureAverageIsOk: " + temperatureAverageIsOk +

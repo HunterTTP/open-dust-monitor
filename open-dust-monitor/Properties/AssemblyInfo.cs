@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("open_temp_alert")]
+[assembly: AssemblyTitle("open_dust_monitor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("open_temp_alert")]
+[assembly: AssemblyProduct("open_dust_monitor")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("313ED3B5-2B90-4D25-BD9E-FB6D81C815C9")]
+[assembly: Guid("41E68F4B-A1F7-474A-B2DA-8D02FE5E07A3")]
 
 // Version information for an assembly consists of the following four values:
 //

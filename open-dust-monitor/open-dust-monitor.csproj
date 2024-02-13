@@ -66,6 +66,7 @@
         </Compile>
         <Compile Include="src\models\TemperatureSnapshot.cs" />
         <Compile Include="src\repositories\TemperatureRepository.cs" />
+        <Compile Include="src\services\HardwareService.cs" />
         <Compile Include="src\services\TemperatureService.cs" />
         <EmbeddedResource Include="Properties\Resources.resx">
             <Generator>ResXFileCodeGenerator</Generator>

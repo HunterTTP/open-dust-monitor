@@ -29,7 +29,6 @@ namespace open_dust_monitor.forms
         private void MainForm_Load_1(object sender, EventArgs e)
         {
             UpdateFormWithCpuInfo();
-            CreateTemperatureChart();
         }
 
         private void MainForm_Resize(object sender, EventArgs e)
@@ -77,21 +76,27 @@ namespace open_dust_monitor.forms
         private void UpdateFormWithCpuInfo()
         {
             var latestTemperatureSnapshot = _temperatureService.GetLatestTemperatureSnapshot();
-            var alertThresholdTemperature = _temperatureService.GetAlertThresholdTemperature();
-            var recentAverageTemperature = _temperatureService.GetRecentAverageTemperature();
-            var temperatureAverageIsOk = _temperatureService.IsRecentAverageTemperatureWithinThreshold();
-            var totalSnapshots = _temperatureService.GetTotalTemperatureSnapshotCount();
-            label1.Text = "CpuName: " + latestTemperatureSnapshot.CpuName +
-                          "\nlatestTemperature: " + latestTemperatureSnapshot.CpuPackageTemperature + "°C" +
-                          "\nlatestLoad: " + latestTemperatureSnapshot.CpuPackageUtilization + "%" +
-                          "\nalertThresholdTemperature: " + alertThresholdTemperature + "°C" +
-                          "\nrecentAverageTemperature: " + recentAverageTemperature + "°C" +
-                          "\ntemperatureAverageIsOk: " + temperatureAverageIsOk +
-                          "\nLatest Timestamp: " + latestTemperatureSnapshot.Timestamp +
-                          "\ntimer1_Interval: " + timer1.Interval / 60000 + " minutes" +
-                          "\nTotal Snapshots: " + totalSnapshots;
+            AddRowToDataGridView("CPU", latestTemperatureSnapshot.CpuName);
+            AddRowToDataGridView("Temperature", latestTemperatureSnapshot.CpuPackageTemperature + "°C");
+            AddRowToDataGridView("Load", latestTemperatureSnapshot.CpuPackageTemperature + "%");
+            AddRowToDataGridView("alertThresholdTemperature", _temperatureService.GetAlertThresholdTemperature() + "°C");
+            AddRowToDataGridView("recentAverageTemperature", _temperatureService.GetRecentAverageTemperature() + "°C");
+            AddRowToDataGridView("temperatureAverageIsOk", _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString());
+            AddRowToDataGridView("Timestamp", latestTemperatureSnapshot.Timestamp.ToString());
+            AddRowToDataGridView("Interval", timer1.Interval / 60000 + " minutes");
+            AddRowToDataGridView("Total Snpashots", _temperatureService.GetTotalTemperatureSnapshotCount().ToString());
             AlertIfTemperatureIsOutsideThreshold();
         }
+
+        private void AddRowToDataGridView(string value1, string value2)
+        {
+            var newRow = new DataGridViewRow();
+            newRow.CreateCells(dataGridView1);
+            newRow.Cells[0].Value = value1;
+            newRow.Cells[1].Value = value2;
+            dataGridView1.Rows.Add(newRow);
+        }
+
 
         private void AlertIfTemperatureIsOutsideThreshold()
         {
@@ -138,17 +143,13 @@ namespace open_dust_monitor.forms
 
             cartesianChart1.AxisX.Add(new Axis
             {
-                Title = "Month",
                 Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" }
             });
 
             cartesianChart1.AxisY.Add(new Axis
             {
-                Title = "Temperature",
-                LabelFormatter = value => value.ToString("C")
+                LabelFormatter = value => value.ToString("N0") + "°"
             });
-
-            cartesianChart1.LegendLocation = LegendLocation.Right;
 
             cartesianChart1.DataClick += CartesianChart1OnDataClick;
 
@@ -183,9 +184,22 @@ namespace open_dust_monitor.forms
 
         private void SysTray_Click(object sender, MouseEventArgs e)
         {
-            this.ShowInTaskbar = true;
-            this.WindowState = FormWindowState.Normal;
-            this.Visible = true;
+            if (this.Visible == false)
+            {
+                this.ShowInTaskbar = true;
+                this.WindowState = FormWindowState.Normal;
+                this.Visible = true;
+            } else
+            {
+                this.Visible = false;
+                this.ShowInTaskbar = false;
+                this.WindowState = FormWindowState.Minimized;
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

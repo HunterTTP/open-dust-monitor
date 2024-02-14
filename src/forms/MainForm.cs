@@ -4,18 +4,24 @@ using System.Windows.Forms;
 using LiveCharts.Wpf;
 using LiveCharts;
 using open_dust_monitor.services;
+using System.Runtime.InteropServices;
 
 namespace open_dust_monitor.forms
 {
     public partial class MainForm : Form
     {
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
         private readonly TemperatureService _temperatureService;
         private readonly LiveCharts.WinForms.CartesianChart temperatureChart;
 
         public MainForm()
         {
             InitializeComponent();
-            FormClosing += MainForm_FormClosing;
             _temperatureService = new TemperatureService();
             temperatureChart = CreateTemperatureChart();
         }
@@ -26,11 +32,6 @@ namespace open_dust_monitor.forms
             CreateTemperatureChart();
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            _temperatureService.StopTemperatureMonitoring();
-        }
-
         private void MainForm_Resize(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Minimized)
@@ -39,7 +40,7 @@ namespace open_dust_monitor.forms
             }
         }
 
-        private void notifyIcon1_MouseDoubleClick_1(object sender, MouseEventArgs e)
+        private void NotifyIcon1_MouseDoubleClick_1(object sender, MouseEventArgs e)
         {
             ShowInTaskbar = true;
             WindowState = FormWindowState.Normal;
@@ -49,6 +50,17 @@ namespace open_dust_monitor.forms
         {
             UpdateFormWithCpuInfo();
             temperatureChart.Series[1].Values.Add(30d);
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CS_DROPSHADOW = 0x20000;
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_DROPSHADOW;
+                return cp;
+            }
         }
 
         private void CartesianChart1OnDataClick(object sender, ChartPoint chartPoint)
@@ -142,8 +154,38 @@ namespace open_dust_monitor.forms
 
             this.panel1.Controls.Clear();
             this.panel1.Controls.Add(cartesianChart1);
+            cartesianChart1.LegendLocation = LegendLocation.None;
             cartesianChart1.Visible = true;
             return cartesianChart1;
+        }
+
+        private void panel2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                // Release the mouse capture started by the mouse down
+                ReleaseCapture();
+                // Send the WM_NCLBUTTONDOWN message, telling the window to start moving using the title bar drag-and-drop operation
+                SendMessage(this.Handle, 0xA1, 0x2, 0);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            _temperatureService.StopTemperatureMonitoring();
+            this.Close();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.ShowInTaskbar = false;
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void SysTray_Click(object sender, MouseEventArgs e)
+        {
+            this.ShowInTaskbar = true;
+            this.WindowState = FormWindowState.Normal;
         }
     }
 }

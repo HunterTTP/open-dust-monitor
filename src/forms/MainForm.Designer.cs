@@ -35,26 +35,30 @@
             button1 = new Button();
             timer1 = new System.Timers.Timer();
             notifyIcon1 = new NotifyIcon(components);
+            panel1 = new Panel();
             ((System.ComponentModel.ISupportInitialize)timer1).BeginInit();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(22, 19);
+            label1.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label1.ForeColor = Color.White;
+            label1.Location = new Point(22, 26);
+            label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
-            label1.Size = new Size(109, 32);
+            label1.Size = new Size(88, 25);
             label1.TabIndex = 0;
             label1.Text = "Loading..";
             // 
             // button1
             // 
             button1.AutoSize = true;
-            button1.Location = new Point(12, 379);
-            button1.Margin = new Padding(3, 4, 3, 4);
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Location = new Point(11, 499);
+            button1.Margin = new Padding(2);
             button1.Name = "button1";
-            button1.Size = new Size(141, 38);
+            button1.Size = new Size(99, 27);
             button1.TabIndex = 1;
             button1.Text = "Take Snapshot";
             button1.UseVisualStyleBackColor = true;
@@ -76,15 +80,26 @@
             notifyIcon1.Text = "notifyIcon1";
             notifyIcon1.Visible = true;
             // 
+            // panel1
+            // 
+            panel1.Location = new Point(15, 258);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(760, 228);
+            panel1.TabIndex = 2;
+            // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
-            ClientSize = new Size(551, 442);
+            BackColor = Color.FromArgb(64, 64, 64);
+            ClientSize = new Size(787, 537);
+            Controls.Add(panel1);
             Controls.Add(button1);
             Controls.Add(label1);
-            Margin = new Padding(3, 4, 3, 4);
+            ForeColor = Color.White;
+            FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(2);
             Name = "MainForm";
             Text = "Open Dust Monitor";
             TopMost = true;
@@ -103,5 +118,6 @@
         #endregion
 
         private NotifyIcon notifyIcon1;
+        private Panel panel1;
     }
 }

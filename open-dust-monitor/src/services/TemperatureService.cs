@@ -51,7 +51,7 @@ namespace open_dust_monitor.services
         public float GetRecentAverageTemperature()
         {
             var temperatureSnapshots = _temperatureRepository.GetAllTemperatureSnapshots();
-            var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-3);
+            var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-7);
             var recentAverageTemperature = temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp >= endDate)
                 .Select(snapshot => snapshot.CpuPackageTemperature)

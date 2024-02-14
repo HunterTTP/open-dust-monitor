@@ -45,6 +45,7 @@ namespace open_dust_monitor.forms
             var totalSnapshots = _temperatureService.GetTotalTemperatureSnapshotCount();
             label1.Text = "CpuName: " + latestTemperatureSnapshot.CpuName +
                           "\nlatestTemperature: " + latestTemperatureSnapshot.CpuPackageTemperature + "°C" +
+                          "\nlatestLoad: " + latestTemperatureSnapshot.CpuPackageUtilization + "%" +
                           "\nalertThresholdTemperature: " + alertThresholdTemperature + "°C" +
                           "\nrecentAverageTemperature: " + recentAverageTemperature + "°C" +
                           "\ntemperatureAverageIsOk: " + temperatureAverageIsOk +

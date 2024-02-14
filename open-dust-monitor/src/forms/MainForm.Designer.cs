@@ -72,6 +72,7 @@
             this.Controls.Add(this.label1);
             this.Name = "MainForm";
             this.Text = "Open Dust Monitor";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.MainForm_Load_1);
             ((System.ComponentModel.ISupportInitialize)(this.timer1)).EndInit();
             this.ResumeLayout(false);

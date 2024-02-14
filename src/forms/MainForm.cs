@@ -163,9 +163,7 @@ namespace open_dust_monitor.forms
         {
             if (e.Button == MouseButtons.Left)
             {
-                // Release the mouse capture started by the mouse down
                 ReleaseCapture();
-                // Send the WM_NCLBUTTONDOWN message, telling the window to start moving using the title bar drag-and-drop operation
                 SendMessage(this.Handle, 0xA1, 0x2, 0);
             }
         }
@@ -178,6 +176,7 @@ namespace open_dust_monitor.forms
 
         private void button3_Click(object sender, EventArgs e)
         {
+            this.Visible = false;
             this.ShowInTaskbar = false;
             this.WindowState = FormWindowState.Minimized;
         }
@@ -186,6 +185,7 @@ namespace open_dust_monitor.forms
         {
             this.ShowInTaskbar = true;
             this.WindowState = FormWindowState.Normal;
+            this.Visible = true;
         }
     }
 }

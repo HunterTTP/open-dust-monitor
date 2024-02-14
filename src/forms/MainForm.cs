@@ -26,6 +26,20 @@ namespace open_dust_monitor.forms
             _temperatureService.StopTemperatureMonitoring();
         }
 
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                ShowInTaskbar = false;
+            }
+        }
+
+        private void notifyIcon1_MouseDoubleClick_1(object sender, MouseEventArgs e)
+        {
+            ShowInTaskbar = true;
+            WindowState = FormWindowState.Normal;
+        }
+
         private void timer1_Elapsed_1(object sender, ElapsedEventArgs e)
         {
             UpdateFormWithCpuInfo();

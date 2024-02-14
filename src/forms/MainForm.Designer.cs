@@ -29,9 +29,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             label1 = new Label();
             button1 = new Button();
             timer1 = new System.Timers.Timer();
+            notifyIcon1 = new NotifyIcon(components);
             ((System.ComponentModel.ISupportInitialize)timer1).BeginInit();
             SuspendLayout();
             // 
@@ -64,6 +67,15 @@
             timer1.SynchronizingObject = this;
             timer1.Elapsed += timer1_Elapsed_1;
             // 
+            // notifyIcon1
+            // 
+            notifyIcon1.BalloonTipIcon = ToolTipIcon.Info;
+            notifyIcon1.BalloonTipText = "test info";
+            notifyIcon1.BalloonTipTitle = "test";
+            notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
+            notifyIcon1.Text = "notifyIcon1";
+            notifyIcon1.Visible = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -72,7 +84,6 @@
             ClientSize = new Size(551, 442);
             Controls.Add(button1);
             Controls.Add(label1);
-            FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Margin = new Padding(3, 4, 3, 4);
             Name = "MainForm";
             Text = "Open Dust Monitor";
@@ -90,5 +101,7 @@
         private System.Windows.Forms.Label label1;
 
         #endregion
+
+        private NotifyIcon notifyIcon1;
     }
 }

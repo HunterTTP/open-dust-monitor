@@ -68,7 +68,7 @@ namespace open_dust_monitor.forms
             // timer1
             // 
             timer1.Enabled = true;
-            timer1.Interval = 300000D;
+            timer1.Interval = 30000D;
             timer1.SynchronizingObject = this;
             timer1.Elapsed += timer1_Elapsed_1;
             // 

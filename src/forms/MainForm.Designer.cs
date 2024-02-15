@@ -57,9 +57,10 @@ namespace open_dust_monitor.forms
             // 
             button1.AutoSize = true;
             button1.FlatStyle = FlatStyle.Flat;
-            button1.Location = new Point(22, 688);
+            button1.Location = new Point(81, 529);
+            button1.Margin = new Padding(2);
             button1.Name = "button1";
-            button1.Size = new Size(141, 45);
+            button1.Size = new Size(99, 27);
             button1.TabIndex = 1;
             button1.Text = "Take Snapshot";
             button1.UseVisualStyleBackColor = true;
@@ -85,20 +86,21 @@ namespace open_dust_monitor.forms
             // panel1
             // 
             panel1.ForeColor = Color.White;
-            panel1.Location = new Point(22, 77);
-            panel1.Margin = new Padding(4, 5, 4, 5);
+            panel1.Location = new Point(81, 75);
             panel1.Name = "panel1";
-            panel1.Size = new Size(783, 252);
+            panel1.Size = new Size(548, 151);
             panel1.TabIndex = 2;
             // 
             // panel2
             // 
             panel2.BackColor = Color.DimGray;
+            panel2.Controls.Add(button3);
+            panel2.Controls.Add(button2);
             panel2.Controls.Add(label2);
-            panel2.Location = new Point(-12, -22);
+            panel2.Location = new Point(-8, -13);
             panel2.Margin = new Padding(0);
             panel2.Name = "panel2";
-            panel2.Size = new Size(864, 69);
+            panel2.Size = new Size(739, 41);
             panel2.TabIndex = 3;
             panel2.Paint += panel2_Paint;
             panel2.MouseDown += panel2_MouseDown;
@@ -108,9 +110,10 @@ namespace open_dust_monitor.forms
             label2.AutoSize = true;
             label2.FlatStyle = FlatStyle.Flat;
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(22, 29);
+            label2.Location = new Point(15, 17);
+            label2.Margin = new Padding(2, 0, 2, 0);
             label2.Name = "label2";
-            label2.Size = new Size(222, 32);
+            label2.Size = new Size(144, 21);
             label2.TabIndex = 4;
             label2.Text = "Open Dust Monitor";
             label2.MouseDown += panel2_MouseDown;
@@ -123,9 +126,10 @@ namespace open_dust_monitor.forms
             button3.FlatStyle = FlatStyle.Flat;
             button3.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button3.ForeColor = Color.White;
-            button3.Location = new Point(734, -3);
+            button3.Location = new Point(633, 12);
+            button3.Margin = new Padding(2);
             button3.Name = "button3";
-            button3.Size = new Size(57, 44);
+            button3.Size = new Size(40, 26);
             button3.TabIndex = 5;
             button3.Text = "__";
             button3.UseVisualStyleBackColor = false;
@@ -138,9 +142,10 @@ namespace open_dust_monitor.forms
             button2.FlatAppearance.BorderSize = 0;
             button2.FlatStyle = FlatStyle.Flat;
             button2.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button2.Location = new Point(788, 0);
+            button2.Location = new Point(677, 14);
+            button2.Margin = new Padding(2);
             button2.Name = "button2";
-            button2.Size = new Size(64, 41);
+            button2.Size = new Size(45, 25);
             button2.TabIndex = 4;
             button2.Text = "X";
             button2.TextAlign = ContentAlignment.BottomCenter;
@@ -184,7 +189,8 @@ namespace open_dust_monitor.forms
             dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
             dataGridView1.EnableHeadersVisualStyles = false;
             dataGridView1.GridColor = Color.White;
-            dataGridView1.Location = new Point(22, 337);
+            dataGridView1.Location = new Point(81, 255);
+            dataGridView1.Margin = new Padding(2);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
             dataGridView1.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
@@ -205,7 +211,7 @@ namespace open_dust_monitor.forms
             dataGridView1.RowTemplate.DefaultCellStyle.BackColor = Color.FromArgb(64, 64, 64);
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.ShowCellToolTips = false;
-            dataGridView1.Size = new Size(783, 345);
+            dataGridView1.Size = new Size(548, 234);
             dataGridView1.TabIndex = 4;
             dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
@@ -225,12 +231,10 @@ namespace open_dust_monitor.forms
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(64, 64, 64);
-            ClientSize = new Size(852, 751);
-            Controls.Add(button2);
-            Controls.Add(button3);
+            ClientSize = new Size(712, 588);
             Controls.Add(button1);
             Controls.Add(dataGridView1);
             Controls.Add(panel1);
@@ -238,6 +242,7 @@ namespace open_dust_monitor.forms
             ForeColor = Color.White;
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(2);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Open Dust Monitor";

@@ -27,6 +27,11 @@ namespace open_dust_monitor.services
             return _temperatureRepository.GetAllTemperatureSnapshots().Count;
         }
 
+        public List<TemperatureSnapshot> GetAllTemperatureSnapshots()
+        {
+            return _temperatureRepository.GetAllTemperatureSnapshots();
+        }
+
         public bool IsRecentAverageTemperatureWithinThreshold()
         {
             return GetRecentAverageTemperature() <= GetAlertThresholdTemperature();

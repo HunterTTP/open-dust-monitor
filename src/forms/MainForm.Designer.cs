@@ -203,6 +203,7 @@ namespace open_dust_monitor.forms
             dataGridView1.ShowCellToolTips = false;
             dataGridView1.Size = new Size(783, 373);
             dataGridView1.TabIndex = 4;
+            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
             // Metric
             // 

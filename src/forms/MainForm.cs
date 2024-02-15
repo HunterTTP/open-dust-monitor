@@ -5,6 +5,8 @@ using LiveCharts.Wpf;
 using LiveCharts;
 using open_dust_monitor.services;
 using System.Runtime.InteropServices;
+using LiveCharts.Defaults;
+using open_dust_monitor.models;
 
 namespace open_dust_monitor.forms
 {
@@ -17,13 +19,13 @@ namespace open_dust_monitor.forms
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
         private readonly TemperatureService _temperatureService;
-        private readonly LiveCharts.WinForms.CartesianChart temperatureChart;
+        private readonly LiveCharts.WinForms.CartesianChart _temperatureChart;
 
         public MainForm()
         {
             InitializeComponent();
             _temperatureService = new TemperatureService();
-            temperatureChart = CreateTemperatureChart();
+            _temperatureChart = CreateTemperatureChart();
         }
 
         private void MainForm_Load_1(object sender, EventArgs e)
@@ -39,16 +41,9 @@ namespace open_dust_monitor.forms
             }
         }
 
-        private void NotifyIcon1_MouseDoubleClick_1(object sender, MouseEventArgs e)
-        {
-            ShowInTaskbar = true;
-            WindowState = FormWindowState.Normal;
-        }
-
         private void timer1_Elapsed_1(object sender, ElapsedEventArgs e)
         {
             UpdateFormWithCpuInfo();
-            temperatureChart.Series[1].Values.Add(30d);
         }
 
         protected override CreateParams CreateParams
@@ -75,16 +70,22 @@ namespace open_dust_monitor.forms
         private void UpdateFormWithCpuInfo()
         {
             var latestTemperatureSnapshot = _temperatureService.GetLatestTemperatureSnapshot();
-            AddOrUpdateRowInDataGridView(0,"CPU", latestTemperatureSnapshot.CpuName);
-            AddOrUpdateRowInDataGridView(1, "Temperature", latestTemperatureSnapshot.CpuPackageTemperature + "°C");
-            AddOrUpdateRowInDataGridView(2, "Load", latestTemperatureSnapshot.CpuPackageTemperature + "%");
+            UpdateGridView(latestTemperatureSnapshot);
+            UpdateTemperatureChart(latestTemperatureSnapshot);
+            AlertIfTemperatureIsOutsideThreshold();
+        }
+
+        private void UpdateGridView(TemperatureSnapshot snapshot)
+        {
+            AddOrUpdateRowInDataGridView(0, "CPU", snapshot.CpuName);
+            AddOrUpdateRowInDataGridView(1, "Temperature", snapshot.CpuPackageTemperature + "°C");
+            AddOrUpdateRowInDataGridView(2, "Load", snapshot.CpuPackageTemperature + "%");
             AddOrUpdateRowInDataGridView(3, "alertThresholdTemperature", _temperatureService.GetAlertThresholdTemperature() + "°C");
             AddOrUpdateRowInDataGridView(4, "recentAverageTemperature", _temperatureService.GetRecentAverageTemperature() + "°C");
             AddOrUpdateRowInDataGridView(5, "temperatureAverageIsOk", _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString());
-            AddOrUpdateRowInDataGridView(6, "Timestamp", latestTemperatureSnapshot.Timestamp.ToString());
+            AddOrUpdateRowInDataGridView(6, "Timestamp", snapshot.Timestamp.ToString());
             AddOrUpdateRowInDataGridView(7, "Interval", timer1.Interval / 60000 + " minutes");
             AddOrUpdateRowInDataGridView(8, "Total Snpashots", _temperatureService.GetTotalTemperatureSnapshotCount().ToString());
-            AlertIfTemperatureIsOutsideThreshold();
         }
 
         private void AddOrUpdateRowInDataGridView(int rowIndex, string value1, string value2)
@@ -116,44 +117,49 @@ namespace open_dust_monitor.forms
                     MessageBoxOptions.DefaultDesktopOnly
                 );
         }
+        
+        private void UpdateTemperatureChart(TemperatureSnapshot snapshot)
+        {
+
+            var series = _temperatureChart.Series[0] as LineSeries;
+
+            if (series != null)
+            {
+                var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature);
+                series.Values.Add(point);
+                _temperatureChart.Update(true, true);
+            }
+
+        }
 
         private LiveCharts.WinForms.CartesianChart CreateTemperatureChart()
         {
+            var temperatureSnapshots = _temperatureService.GetAllTemperatureSnapshots();
+
             LiveCharts.WinForms.CartesianChart cartesianChart1 = new()
             {
                 Width = panel1.Width,
                 Height = panel1.Height,
                 Visible = false,
                 Series = new SeriesCollection
-              {
-                new LineSeries
-                {
-                  Title = "Series 1",
-                  Values = new ChartValues<double> {4, 6, 5, 2, 7}
-                },
-                new LineSeries
-                {
-                  Title = "Series 2",
-                  Values = new ChartValues<double> {6, 7, 3, 4, 6},
-                  PointGeometry = null
-                },
-                new LineSeries
-                {
-                  Title = "Series 3",
-                  Values = new ChartValues<double> {5, 2, 8, 3},
-                  PointGeometry = DefaultGeometries.Square,
-                  PointGeometrySize = 15
-                }
-              }
+        {
+            new LineSeries
+            {
+                Title = "Temperature",
+                Values = new ChartValues<DateTimePoint>(temperatureSnapshots.Select(snapshot => new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature)))
+            }
+        }
             };
 
             cartesianChart1.AxisX.Add(new Axis
             {
-                Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" }
+                Title = "Time",
+                LabelFormatter = value => new DateTime((long)value).ToString("MMM dd")
             });
 
             cartesianChart1.AxisY.Add(new Axis
             {
+                Title = "Temperature",
                 LabelFormatter = value => value.ToString("N0") + "°"
             });
 
@@ -163,6 +169,7 @@ namespace open_dust_monitor.forms
             this.panel1.Controls.Add(cartesianChart1);
             cartesianChart1.LegendLocation = LegendLocation.None;
             cartesianChart1.Visible = true;
+
             return cartesianChart1;
         }
 
@@ -195,12 +202,18 @@ namespace open_dust_monitor.forms
                 this.ShowInTaskbar = true;
                 this.WindowState = FormWindowState.Normal;
                 this.Visible = true;
-            } else
+            }
+            else
             {
                 this.Visible = false;
                 this.ShowInTaskbar = false;
                 this.WindowState = FormWindowState.Minimized;
             }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

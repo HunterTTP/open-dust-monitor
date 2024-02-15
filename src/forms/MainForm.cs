@@ -70,33 +70,39 @@ namespace open_dust_monitor.forms
         private void button1_Click_1(object sender, EventArgs e)
         {
             UpdateFormWithCpuInfo();
-            temperatureChart.Series[1].Values.Add(30d);
         }
 
         private void UpdateFormWithCpuInfo()
         {
             var latestTemperatureSnapshot = _temperatureService.GetLatestTemperatureSnapshot();
-            AddRowToDataGridView("CPU", latestTemperatureSnapshot.CpuName);
-            AddRowToDataGridView("Temperature", latestTemperatureSnapshot.CpuPackageTemperature + "°C");
-            AddRowToDataGridView("Load", latestTemperatureSnapshot.CpuPackageTemperature + "%");
-            AddRowToDataGridView("alertThresholdTemperature", _temperatureService.GetAlertThresholdTemperature() + "°C");
-            AddRowToDataGridView("recentAverageTemperature", _temperatureService.GetRecentAverageTemperature() + "°C");
-            AddRowToDataGridView("temperatureAverageIsOk", _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString());
-            AddRowToDataGridView("Timestamp", latestTemperatureSnapshot.Timestamp.ToString());
-            AddRowToDataGridView("Interval", timer1.Interval / 60000 + " minutes");
-            AddRowToDataGridView("Total Snpashots", _temperatureService.GetTotalTemperatureSnapshotCount().ToString());
+            AddOrUpdateRowInDataGridView(0,"CPU", latestTemperatureSnapshot.CpuName);
+            AddOrUpdateRowInDataGridView(1, "Temperature", latestTemperatureSnapshot.CpuPackageTemperature + "°C");
+            AddOrUpdateRowInDataGridView(2, "Load", latestTemperatureSnapshot.CpuPackageTemperature + "%");
+            AddOrUpdateRowInDataGridView(3, "alertThresholdTemperature", _temperatureService.GetAlertThresholdTemperature() + "°C");
+            AddOrUpdateRowInDataGridView(4, "recentAverageTemperature", _temperatureService.GetRecentAverageTemperature() + "°C");
+            AddOrUpdateRowInDataGridView(5, "temperatureAverageIsOk", _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString());
+            AddOrUpdateRowInDataGridView(6, "Timestamp", latestTemperatureSnapshot.Timestamp.ToString());
+            AddOrUpdateRowInDataGridView(7, "Interval", timer1.Interval / 60000 + " minutes");
+            AddOrUpdateRowInDataGridView(8, "Total Snpashots", _temperatureService.GetTotalTemperatureSnapshotCount().ToString());
             AlertIfTemperatureIsOutsideThreshold();
         }
 
-        private void AddRowToDataGridView(string value1, string value2)
+        private void AddOrUpdateRowInDataGridView(int rowIndex, string value1, string value2)
         {
-            var newRow = new DataGridViewRow();
-            newRow.CreateCells(dataGridView1);
-            newRow.Cells[0].Value = value1;
-            newRow.Cells[1].Value = value2;
-            dataGridView1.Rows.Add(newRow);
+            if (rowIndex >= 0 && rowIndex < dataGridView1.Rows.Count)
+            {
+                dataGridView1.Rows[rowIndex].Cells[0].Value = value1;
+                dataGridView1.Rows[rowIndex].Cells[1].Value = value2;
+            }
+            else
+            {
+                var newRow = new DataGridViewRow();
+                newRow.CreateCells(dataGridView1);
+                newRow.Cells[0].Value = value1;
+                newRow.Cells[1].Value = value2;
+                dataGridView1.Rows.Add(newRow);
+            }
         }
-
 
         private void AlertIfTemperatureIsOutsideThreshold()
         {
@@ -195,11 +201,6 @@ namespace open_dust_monitor.forms
                 this.ShowInTaskbar = false;
                 this.WindowState = FormWindowState.Minimized;
             }
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

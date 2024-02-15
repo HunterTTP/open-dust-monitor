@@ -65,6 +65,12 @@ namespace open_dust_monitor.services
             return (float)Math.Round(recentAverageTemperature);
         }
 
+        public List<TemperatureSnapshot> GetRecentSnaptshots()
+        {
+            var snapshots = GetAllTemperatureSnapshots();
+            return snapshots.Where(snapshot => snapshot.Timestamp >= DateTime.Now.AddHours(-4)).ToList();
+        }
+
         public void StopTemperatureMonitoring()
         {
             _hardwareService.StopHardwareMonitoring();

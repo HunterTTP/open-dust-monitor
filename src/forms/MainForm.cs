@@ -121,12 +121,22 @@ namespace open_dust_monitor.forms
         private void UpdateTemperatureChart(TemperatureSnapshot snapshot)
         {
 
-            var series = _temperatureChart.Series[0] as LineSeries;
+            var temperatureSeries = _temperatureChart.Series[0] as LineSeries;
+            var loadSeries = _temperatureChart.Series[1] as LineSeries;
 
-            if (series != null)
+            if (temperatureSeries != null)
             {
                 var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature);
-                series.Values.Add(point);
+                temperatureSeries.Values.RemoveAt(0);
+                temperatureSeries.Values.Add(point);
+                _temperatureChart.Update(true, true);
+            }
+
+            if (loadSeries != null)
+            {
+                var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageUtilization);
+                loadSeries.Values.RemoveAt(0);
+                loadSeries.Values.Add(point);
                 _temperatureChart.Update(true, true);
             }
 
@@ -134,7 +144,7 @@ namespace open_dust_monitor.forms
 
         private LiveCharts.WinForms.CartesianChart CreateTemperatureChart()
         {
-            var temperatureSnapshots = _temperatureService.GetAllTemperatureSnapshots();
+            var temperatureSnapshots = _temperatureService.GetRecentSnaptshots();
 
             LiveCharts.WinForms.CartesianChart cartesianChart1 = new()
             {
@@ -147,6 +157,11 @@ namespace open_dust_monitor.forms
             {
                 Title = "Temperature",
                 Values = new ChartValues<DateTimePoint>(temperatureSnapshots.Select(snapshot => new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature)))
+            },
+            new LineSeries
+            {
+                Title = "Utilization",
+                Values = new ChartValues<DateTimePoint>(temperatureSnapshots.Select(snapshot => new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageUtilization)))
             }
         }
             };

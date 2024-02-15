@@ -26,12 +26,19 @@ namespace open_dust_monitor.services
 
         public float GetCurrentCpuTemperature()
         {
+            _thisCpu.Update();
             return (float)Math.Round(_thisCpuTemperatureSensor.Value.GetValueOrDefault(0));
         }
 
         public float GetCurrentCpuLoad()
         {
+            _thisCpu.Update();
             return (float)Math.Round(_thisCpuLoadSensor.Value.GetValueOrDefault(0));
+        }
+
+        public ISensor GetCpuLoadSensor()
+        {
+            return _thisCpuLoadSensor;
         }
 
         private static Computer FindComputerHardwareList()
@@ -57,29 +64,33 @@ namespace open_dust_monitor.services
         private static ISensor FindCpuPackageTempSensor(IHardware cpu)
         {
             var cpuPackageTempSensor = cpu.Sensors.Where(IsCpuPackageTempSensor).First();
-            if (cpuPackageTempSensor == null) throw new Exception("No CPU Temperature sensor found.");
-
+            if (cpuPackageTempSensor == null)
+            {
+                throw new Exception("No CPU Temperature sensor found.");
+            }
+            Console.WriteLine("cpuPackageTemperatureSensor found with name=" + cpuPackageTempSensor.Name);
             return cpuPackageTempSensor;
         }
 
         private static bool IsCpuPackageTempSensor(ISensor sensor)
         {
-            return sensor.SensorType == SensorType.Temperature
-                   && (sensor.Name == "CPU Package" || sensor.Name == "CPU Total");
+            return sensor.SensorType == SensorType.Temperature && (sensor.Name == "CPU Package" || sensor.Name == "CPU Total");
         }
 
         private static ISensor FindCpuPackageLoadSensor(IHardware cpu)
         {
             var cpuPackageLoadSensor = cpu.Sensors.Where(IsCpuLoadSensor).First();
-            if (cpuPackageLoadSensor == null) throw new Exception("No CPU Load sensor found.");
-
+            if (cpuPackageLoadSensor == null)
+            {
+                throw new Exception("No CPU Load sensor found.");
+            }
+            Console.WriteLine("cpuPackageLoadSensor found with name=" + cpuPackageLoadSensor.Name);
             return cpuPackageLoadSensor;
         }
 
         private static bool IsCpuLoadSensor(ISensor sensor)
         {
-            return sensor.SensorType == SensorType.Load
-                   && (sensor.Name == "CPU Package" || sensor.Name == "CPU Total");
+            return sensor.SensorType == SensorType.Load && (sensor.Name == "CPU Package" || sensor.Name == "CPU Total");
         }
 
         public void StopHardwareMonitoring()

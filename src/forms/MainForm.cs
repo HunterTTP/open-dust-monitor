@@ -79,7 +79,7 @@ namespace open_dust_monitor.forms
         {
             AddOrUpdateRowInDataGridView(0, "CPU", snapshot.CpuName);
             AddOrUpdateRowInDataGridView(1, "Temperature", snapshot.CpuPackageTemperature + "°C");
-            AddOrUpdateRowInDataGridView(2, "Load", snapshot.CpuPackageTemperature + "%");
+            AddOrUpdateRowInDataGridView(2, "Load", snapshot.CpuPackageUtilization + "%");
             AddOrUpdateRowInDataGridView(3, "alertThresholdTemperature", _temperatureService.GetAlertThresholdTemperature() + "°C");
             AddOrUpdateRowInDataGridView(4, "recentAverageTemperature", _temperatureService.GetRecentAverageTemperature() + "°C");
             AddOrUpdateRowInDataGridView(5, "temperatureAverageIsOk", _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString());
@@ -117,7 +117,7 @@ namespace open_dust_monitor.forms
                     MessageBoxOptions.DefaultDesktopOnly
                 );
         }
-        
+
         private void UpdateTemperatureChart(TemperatureSnapshot snapshot)
         {
 
@@ -127,7 +127,6 @@ namespace open_dust_monitor.forms
             if (temperatureSeries != null)
             {
                 var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature);
-                temperatureSeries.Values.RemoveAt(0);
                 temperatureSeries.Values.Add(point);
                 _temperatureChart.Update(true, true);
             }
@@ -135,7 +134,6 @@ namespace open_dust_monitor.forms
             if (loadSeries != null)
             {
                 var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageUtilization);
-                loadSeries.Values.RemoveAt(0);
                 loadSeries.Values.Add(point);
                 _temperatureChart.Update(true, true);
             }
@@ -227,6 +225,11 @@ namespace open_dust_monitor.forms
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
         {
 
         }

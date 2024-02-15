@@ -22,6 +22,12 @@ namespace open_dust_monitor.services
             return latestTemperatureSnapshot;
         }
 
+        public string GetLoadSensorName()
+        {
+            var cpuLoadSensor = _hardwareService.GetCpuLoadSensor();
+            return cpuLoadSensor.Name;
+        }
+
         public int GetTotalTemperatureSnapshotCount()
         {
             return _temperatureRepository.GetAllTemperatureSnapshots().Count;
@@ -68,7 +74,7 @@ namespace open_dust_monitor.services
         public List<TemperatureSnapshot> GetRecentSnaptshots()
         {
             var snapshots = GetAllTemperatureSnapshots();
-            return snapshots.Where(snapshot => snapshot.Timestamp >= DateTime.Now.AddHours(-4)).ToList();
+            return snapshots.Where(snapshot => snapshot.Timestamp >= DateTime.Now.AddHours(-1)).ToList();
         }
 
         public void StopTemperatureMonitoring()

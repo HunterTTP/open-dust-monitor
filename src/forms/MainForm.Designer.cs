@@ -57,7 +57,7 @@ namespace open_dust_monitor.forms
             // 
             button1.AutoSize = true;
             button1.FlatStyle = FlatStyle.Flat;
-            button1.Location = new Point(28, 768);
+            button1.Location = new Point(22, 688);
             button1.Name = "button1";
             button1.Size = new Size(141, 45);
             button1.TabIndex = 1;
@@ -98,8 +98,9 @@ namespace open_dust_monitor.forms
             panel2.Location = new Point(-12, -22);
             panel2.Margin = new Padding(0);
             panel2.Name = "panel2";
-            panel2.Size = new Size(749, 62);
+            panel2.Size = new Size(864, 69);
             panel2.TabIndex = 3;
+            panel2.Paint += panel2_Paint;
             panel2.MouseDown += panel2_MouseDown;
             // 
             // label2
@@ -107,7 +108,7 @@ namespace open_dust_monitor.forms
             label2.AutoSize = true;
             label2.FlatStyle = FlatStyle.Flat;
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(22, 25);
+            label2.Location = new Point(22, 29);
             label2.Name = "label2";
             label2.Size = new Size(222, 32);
             label2.TabIndex = 4;
@@ -116,13 +117,13 @@ namespace open_dust_monitor.forms
             // 
             // button3
             // 
-            button3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            button3.Anchor = AnchorStyles.Top;
             button3.BackColor = Color.DimGray;
             button3.FlatAppearance.BorderSize = 0;
             button3.FlatStyle = FlatStyle.Flat;
             button3.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button3.ForeColor = Color.White;
-            button3.Location = new Point(734, -4);
+            button3.Location = new Point(734, -3);
             button3.Name = "button3";
             button3.Size = new Size(57, 44);
             button3.TabIndex = 5;
@@ -132,12 +133,12 @@ namespace open_dust_monitor.forms
             // 
             // button2
             // 
-            button2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            button2.Anchor = AnchorStyles.Top;
             button2.BackColor = Color.DimGray;
             button2.FlatAppearance.BorderSize = 0;
             button2.FlatStyle = FlatStyle.Flat;
             button2.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button2.Location = new Point(788, -1);
+            button2.Location = new Point(788, 0);
             button2.Name = "button2";
             button2.Size = new Size(64, 41);
             button2.TabIndex = 4;
@@ -153,17 +154,19 @@ namespace open_dust_monitor.forms
             dataGridView1.AllowUserToResizeColumns = false;
             dataGridView1.AllowUserToResizeRows = false;
             dataGridViewCellStyle1.BackColor = Color.FromArgb(64, 64, 64);
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.ForeColor = Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(64, 64, 64);
             dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             dataGridView1.BackgroundColor = Color.FromArgb(64, 64, 64);
             dataGridView1.BorderStyle = BorderStyle.None;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = Color.White;
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            dataGridViewCellStyle2.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(64, 64, 64);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle2.ForeColor = Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(64, 64, 64);
             dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
             dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
@@ -181,15 +184,15 @@ namespace open_dust_monitor.forms
             dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
             dataGridView1.EnableHeadersVisualStyles = false;
             dataGridView1.GridColor = Color.White;
-            dataGridView1.Location = new Point(28, 366);
+            dataGridView1.Location = new Point(22, 337);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
             dataGridView1.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = Color.FromArgb(64, 64, 64);
-            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             dataGridViewCellStyle4.ForeColor = Color.White;
-            dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(64, 64, 64);
             dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
             dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
@@ -197,11 +200,12 @@ namespace open_dust_monitor.forms
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             dataGridViewCellStyle5.BackColor = Color.FromArgb(64, 64, 64);
             dataGridViewCellStyle5.ForeColor = Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = Color.FromArgb(64, 64, 64);
             dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle5;
             dataGridView1.RowTemplate.DefaultCellStyle.BackColor = Color.FromArgb(64, 64, 64);
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.ShowCellToolTips = false;
-            dataGridView1.Size = new Size(783, 373);
+            dataGridView1.Size = new Size(783, 345);
             dataGridView1.TabIndex = 4;
             dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
@@ -224,10 +228,10 @@ namespace open_dust_monitor.forms
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(64, 64, 64);
-            ClientSize = new Size(852, 851);
-            Controls.Add(button1);
+            ClientSize = new Size(852, 751);
             Controls.Add(button2);
             Controls.Add(button3);
+            Controls.Add(button1);
             Controls.Add(dataGridView1);
             Controls.Add(panel1);
             Controls.Add(panel2);

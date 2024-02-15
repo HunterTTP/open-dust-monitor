@@ -42,9 +42,9 @@ namespace open_dust_monitor.forms
             notifyIcon1 = new NotifyIcon(components);
             panel1 = new Panel();
             panel2 = new Panel();
-            label2 = new Label();
             button3 = new Button();
             button2 = new Button();
+            label2 = new Label();
             dataGridView1 = new DataGridView();
             Metric = new DataGridViewTextBoxColumn();
             Value = new DataGridViewTextBoxColumn();
@@ -64,14 +64,14 @@ namespace open_dust_monitor.forms
             button1.TabIndex = 1;
             button1.Text = "Take Snapshot";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click_1;
+            button1.Click += SnapshotButton_Click;
             // 
             // timer1
             // 
             timer1.Enabled = true;
-            timer1.Interval = 30000D;
+            timer1.Interval = 5000D;
             timer1.SynchronizingObject = this;
-            timer1.Elapsed += timer1_Elapsed_1;
+            timer1.Elapsed += SnapshotTimer_Elapse;
             // 
             // notifyIcon1
             // 
@@ -102,21 +102,7 @@ namespace open_dust_monitor.forms
             panel2.Name = "panel2";
             panel2.Size = new Size(739, 41);
             panel2.TabIndex = 3;
-            panel2.Paint += panel2_Paint;
-            panel2.MouseDown += panel2_MouseDown;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.FlatStyle = FlatStyle.Flat;
-            label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(15, 17);
-            label2.Margin = new Padding(2, 0, 2, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(144, 21);
-            label2.TabIndex = 4;
-            label2.Text = "Open Dust Monitor";
-            label2.MouseDown += panel2_MouseDown;
+            panel2.MouseDown += TitleBar_Drag;
             // 
             // button3
             // 
@@ -126,14 +112,14 @@ namespace open_dust_monitor.forms
             button3.FlatStyle = FlatStyle.Flat;
             button3.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             button3.ForeColor = Color.White;
-            button3.Location = new Point(633, 12);
+            button3.Location = new Point(642, 12);
             button3.Margin = new Padding(2);
             button3.Name = "button3";
             button3.Size = new Size(40, 26);
             button3.TabIndex = 5;
             button3.Text = "__";
             button3.UseVisualStyleBackColor = false;
-            button3.Click += button3_Click;
+            button3.Click += CloseButton_Click;
             // 
             // button2
             // 
@@ -150,7 +136,20 @@ namespace open_dust_monitor.forms
             button2.Text = "X";
             button2.TextAlign = ContentAlignment.BottomCenter;
             button2.UseVisualStyleBackColor = false;
-            button2.Click += button2_Click;
+            button2.Click += MinimizeButton_Click;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.FlatStyle = FlatStyle.Flat;
+            label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.Location = new Point(15, 17);
+            label2.Margin = new Padding(2, 0, 2, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(144, 21);
+            label2.TabIndex = 4;
+            label2.Text = "Open Dust Monitor";
+            label2.MouseDown += TitleBar_Drag;
             // 
             // dataGridView1
             // 
@@ -213,7 +212,6 @@ namespace open_dust_monitor.forms
             dataGridView1.ShowCellToolTips = false;
             dataGridView1.Size = new Size(548, 234);
             dataGridView1.TabIndex = 4;
-            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
             // Metric
             // 
@@ -246,7 +244,6 @@ namespace open_dust_monitor.forms
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Open Dust Monitor";
-            TopMost = true;
             Load += MainForm_Load_1;
             ((System.ComponentModel.ISupportInitialize)timer1).EndInit();
             panel2.ResumeLayout(false);

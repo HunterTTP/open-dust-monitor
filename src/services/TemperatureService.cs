@@ -71,11 +71,24 @@ namespace open_dust_monitor.services
             return (float)Math.Round(recentAverageTemperature);
         }
 
-        public List<TemperatureSnapshot> GetRecentSnaptshots()
+        public List<TemperatureSnapshot> GetRecentSnapshots()
         {
-            var snapshots = GetAllTemperatureSnapshots();
-            return snapshots.Where(snapshot => snapshot.Timestamp >= DateTime.Now.AddHours(-1)).ToList();
+            var snapshots = GetAllTemperatureSnapshots().OrderBy(snapshot => snapshot.Timestamp).ToList();
+            return snapshots.Take(20).ToList();
         }
+
+        public List<TemperatureSnapshot> GetStartingSnapshots()
+        {
+            var currentSnapshot = GetLatestTemperatureSnapshot();
+            var historicSnapshot = new TemperatureSnapshot(
+                DateTime.Now.AddMinutes(-1),
+                _hardwareService.GetCpuName(),
+                _hardwareService.GetCurrentCpuLoad(),
+                _hardwareService.GetCurrentCpuTemperature()
+            );
+            return [historicSnapshot, currentSnapshot];
+        }
+
 
         public void StopTemperatureMonitoring()
         {

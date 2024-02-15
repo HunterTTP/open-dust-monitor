@@ -1,12 +1,10 @@
-﻿using System;
-using System.Timers;
-using System.Windows.Forms;
+﻿using LiveCharts.Defaults;
 using LiveCharts.Wpf;
-using LiveCharts;
-using open_dust_monitor.services;
-using System.Runtime.InteropServices;
-using LiveCharts.Defaults;
 using open_dust_monitor.models;
+using open_dust_monitor.services;
+using open_dust_monitor.src.Handler;
+using System.Runtime.InteropServices;
+using System.Timers;
 
 namespace open_dust_monitor.forms
 {
@@ -18,7 +16,7 @@ namespace open_dust_monitor.forms
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-        private readonly TemperatureService _temperatureService;
+        public readonly TemperatureService _temperatureService;
         private readonly LiveCharts.WinForms.CartesianChart _temperatureChart;
 
         public MainForm()
@@ -41,28 +39,13 @@ namespace open_dust_monitor.forms
             }
         }
 
-        private void timer1_Elapsed_1(object sender, ElapsedEventArgs e)
+        private void SnapshotTimer_Elapse(object sender, ElapsedEventArgs e)
         {
             UpdateFormWithCpuInfo();
         }
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                const int CS_DROPSHADOW = 0x20000;
-                CreateParams cp = base.CreateParams;
-                cp.ClassStyle |= CS_DROPSHADOW;
-                return cp;
-            }
-        }
 
-        private void CartesianChart1OnDataClick(object sender, ChartPoint chartPoint)
-        {
-            MessageBox.Show("You clicked (" + chartPoint.X + "," + chartPoint.Y + ")");
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
+        private void SnapshotButton_Click(object sender, EventArgs e)
         {
             UpdateFormWithCpuInfo();
         }
@@ -84,7 +67,7 @@ namespace open_dust_monitor.forms
             AddOrUpdateRowInDataGridView(4, "recentAverageTemperature", _temperatureService.GetRecentAverageTemperature() + "°C");
             AddOrUpdateRowInDataGridView(5, "temperatureAverageIsOk", _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString());
             AddOrUpdateRowInDataGridView(6, "Timestamp", snapshot.Timestamp.ToString());
-            AddOrUpdateRowInDataGridView(7, "Interval", timer1.Interval / 60000 + " minutes");
+            AddOrUpdateRowInDataGridView(7, "Interval", timer1.Interval / 1000 + " seconds");
             AddOrUpdateRowInDataGridView(8, "Total Snpashots", _temperatureService.GetTotalTemperatureSnapshotCount().ToString());
         }
 
@@ -114,79 +97,35 @@ namespace open_dust_monitor.forms
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information,
                     MessageBoxDefaultButton.Button1,
-                    MessageBoxOptions.DefaultDesktopOnly
-                );
+                    MessageBoxOptions.DefaultDesktopOnly);
         }
 
         private void UpdateTemperatureChart(TemperatureSnapshot snapshot)
         {
-
             var temperatureSeries = _temperatureChart.Series[0] as LineSeries;
             var loadSeries = _temperatureChart.Series[1] as LineSeries;
-
             if (temperatureSeries != null)
             {
                 var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature);
                 temperatureSeries.Values.Add(point);
                 _temperatureChart.Update(true, true);
             }
-
             if (loadSeries != null)
             {
                 var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageUtilization);
                 loadSeries.Values.Add(point);
                 _temperatureChart.Update(true, true);
             }
-
         }
 
         private LiveCharts.WinForms.CartesianChart CreateTemperatureChart()
         {
-            var temperatureSnapshots = _temperatureService.GetRecentSnaptshots();
-
-            LiveCharts.WinForms.CartesianChart cartesianChart1 = new()
-            {
-                Width = panel1.Width,
-                Height = panel1.Height,
-                Visible = false,
-                Series = new SeriesCollection
-        {
-            new LineSeries
-            {
-                Title = "Temperature",
-                Values = new ChartValues<DateTimePoint>(temperatureSnapshots.Select(snapshot => new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature)))
-            },
-            new LineSeries
-            {
-                Title = "Utilization",
-                Values = new ChartValues<DateTimePoint>(temperatureSnapshots.Select(snapshot => new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageUtilization)))
-            }
-        }
-            };
-
-            cartesianChart1.AxisX.Add(new Axis
-            {
-                Title = "Time",
-                LabelFormatter = value => new DateTime((long)value).ToString("MMM dd")
-            });
-
-            cartesianChart1.AxisY.Add(new Axis
-            {
-                Title = "Temperature",
-                LabelFormatter = value => value.ToString("N0") + "°"
-            });
-
-            cartesianChart1.DataClick += CartesianChart1OnDataClick;
-
-            this.panel1.Controls.Clear();
+            var cartesianChart1 = ChartHandler.CreateTemperatureChart(panel1.Height, panel1.Width);
             this.panel1.Controls.Add(cartesianChart1);
-            cartesianChart1.LegendLocation = LegendLocation.None;
-            cartesianChart1.Visible = true;
-
             return cartesianChart1;
         }
 
-        private void panel2_MouseDown(object sender, MouseEventArgs e)
+        private void TitleBar_Drag(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -195,13 +134,13 @@ namespace open_dust_monitor.forms
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void MinimizeButton_Click(object sender, EventArgs e)
         {
             _temperatureService.StopTemperatureMonitoring();
             this.Close();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void CloseButton_Click(object sender, EventArgs e)
         {
             this.Visible = false;
             this.ShowInTaskbar = false;
@@ -224,14 +163,15 @@ namespace open_dust_monitor.forms
             }
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        protected override CreateParams CreateParams
         {
-
-        }
-
-        private void panel2_Paint(object sender, PaintEventArgs e)
-        {
-
+            get
+            {
+                const int CS_DROPSHADOW = 0x20000;
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_DROPSHADOW;
+                return cp;
+            }
         }
     }
 }

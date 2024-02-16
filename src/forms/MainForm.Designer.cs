@@ -244,6 +244,7 @@ namespace open_dust_monitor.forms
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Open Dust Monitor";
+            TopMost = true;
             Load += MainForm_Load_1;
             ((System.ComponentModel.ISupportInitialize)timer1).EndInit();
             panel2.ResumeLayout(false);

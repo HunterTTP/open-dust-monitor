@@ -23,12 +23,16 @@ namespace open_dust_monitor.src.Handler
             {
                 Title = "Temperature",
                 Values = TemperatureSeries,
+                PointGeometry = DefaultGeometries.Square,
+                PointGeometrySize = 5,
             };
 
             var utilizationSeries = new LineSeries
             {
                 Title = "Utilization",
                 Values = LoadSeries,
+                PointGeometry = DefaultGeometries.Square,
+                PointGeometrySize = 5
             };
             
             TemperatureSeries.Add(new DateTimePoint(temperatureSnapshot.Timestamp, temperatureSnapshot.CpuPackageTemperature));
@@ -45,7 +49,7 @@ namespace open_dust_monitor.src.Handler
 
             cartesianChart.AxisY.Add(new Axis
             {
-                LabelFormatter = value => value.ToString("N1") + "°C",
+                LabelFormatter = value => value.ToString("N1"),
                 MinValue = 0,
                 MaxValue = 100
             });

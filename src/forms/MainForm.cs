@@ -1,5 +1,4 @@
 ﻿using LiveCharts.Defaults;
-using LiveCharts.Wpf;
 using open_dust_monitor.models;
 using open_dust_monitor.services;
 using open_dust_monitor.src.Handler;
@@ -16,14 +15,14 @@ namespace open_dust_monitor.forms
         [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-        public readonly TemperatureService _temperatureService;
+        private readonly TemperatureService _temperatureService;
         private readonly LiveCharts.WinForms.CartesianChart _temperatureChart;
 
         public MainForm()
         {
             InitializeComponent();
-            _temperatureService = new TemperatureService();
-            _temperatureChart = CreateTemperatureChart();
+            _temperatureService = InstanceHandler.GetTemperatureService();
+            _temperatureChart = AddTemperatureChart();
         }
 
         private void MainForm_Load_1(object sender, EventArgs e)
@@ -102,25 +101,18 @@ namespace open_dust_monitor.forms
 
         private void UpdateTemperatureChart(TemperatureSnapshot snapshot)
         {
-            var temperatureSeries = _temperatureChart.Series[0] as LineSeries;
-            var loadSeries = _temperatureChart.Series[1] as LineSeries;
-            if (temperatureSeries != null)
+            if (ChartHandler.TemperatureSeries.Count >= 15)
             {
-                var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature);
-                temperatureSeries.Values.Add(point);
-                _temperatureChart.Update(true, true);
+                ChartHandler.TemperatureSeries.RemoveAt(0);
+                ChartHandler.LoadSeries.RemoveAt(0);
             }
-            if (loadSeries != null)
-            {
-                var point = new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageUtilization);
-                loadSeries.Values.Add(point);
-                _temperatureChart.Update(true, true);
-            }
+            ChartHandler.TemperatureSeries.Add(new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageTemperature));
+            ChartHandler.LoadSeries.Add(new DateTimePoint(snapshot.Timestamp, snapshot.CpuPackageUtilization));
         }
 
-        private LiveCharts.WinForms.CartesianChart CreateTemperatureChart()
+        private LiveCharts.WinForms.CartesianChart AddTemperatureChart()
         {
-            var cartesianChart1 = ChartHandler.CreateTemperatureChart(panel1.Height, panel1.Width);
+            var cartesianChart1 = ChartHandler.CreateTemperatureChart(panel1.Height, panel1.Width, _temperatureService.GetLatestTemperatureSnapshot());
             this.panel1.Controls.Add(cartesianChart1);
             return cartesianChart1;
         }

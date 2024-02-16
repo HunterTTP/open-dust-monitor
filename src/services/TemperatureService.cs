@@ -1,14 +1,13 @@
-﻿using System;
-using System.Linq;
-using open_dust_monitor.models;
+﻿using open_dust_monitor.models;
 using open_dust_monitor.repositories;
+using open_dust_monitor.src.Handler;
 
 namespace open_dust_monitor.services
 {
     public class TemperatureService
     {
-        private readonly HardwareService _hardwareService = new HardwareService();
-        private readonly TemperatureRepository _temperatureRepository = new TemperatureRepository();
+        private readonly HardwareService _hardwareService = InstanceHandler.GetHardwareService();
+        private readonly TemperatureRepository _temperatureRepository = InstanceHandler.GetTemperatureRepository();
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
@@ -75,18 +74,6 @@ namespace open_dust_monitor.services
         {
             var snapshots = GetAllTemperatureSnapshots().OrderBy(snapshot => snapshot.Timestamp).ToList();
             return snapshots.Take(20).ToList();
-        }
-
-        public List<TemperatureSnapshot> GetStartingSnapshots()
-        {
-            var currentSnapshot = GetLatestTemperatureSnapshot();
-            var historicSnapshot = new TemperatureSnapshot(
-                DateTime.Now.AddMinutes(-1),
-                _hardwareService.GetCpuName(),
-                _hardwareService.GetCurrentCpuLoad(),
-                _hardwareService.GetCurrentCpuTemperature()
-            );
-            return [historicSnapshot, currentSnapshot];
         }
 
 

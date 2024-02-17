@@ -1,5 +1,4 @@
-﻿using open_dust_monitor.models;
-using open_dust_monitor.services;
+﻿using open_dust_monitor.services;
 using open_dust_monitor.src.Handler;
 
 namespace open_dust_monitor.src.forms
@@ -31,25 +30,9 @@ namespace open_dust_monitor.src.forms
         private async Task UpdateFormWithCpuInfo()
         {
             var latestTemperatureSnapshot = await Task.Run(() => _temperatureService.GetLatestTemperatureSnapshot());
-            UpdateSnapshotLabel(latestTemperatureSnapshot);
+            var snapshotLabel = await Task.Run(() => _temperatureService.GetTemperatureSnapshotLabel(latestTemperatureSnapshot, timer1.Interval));
+            label1.Text = snapshotLabel;
             AlertIfTemperatureIsOutsideThreshold();
-        }
-
-        private void UpdateSnapshotLabel(TemperatureSnapshot snapshot)
-        {
-            label1.Text =
-                "Latest Snapshot:" +
-                "\n Timestamp: " + snapshot.Timestamp +
-                "\n CPU: " + snapshot.CpuName +
-                "\n Temperature: " + snapshot.CpuPackageTemperature + "°C" +
-                "\n Utilization: " + snapshot.CpuPackageUtilization + "%" +
-                "\n" +
-                "\nKey Variables:" +
-                "\n alertThresholdTemperature: " + _temperatureService.GetAlertThresholdTemperature() + "°C" +
-                "\n recentAverageTemperature: " + _temperatureService.GetRecentAverageTemperature() + "°C" +
-                "\n recentAverageIsOk: " + _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString() +
-                "\n timestampFrequency: " + timer1.Interval / 1000 + " seconds" +
-                "\n Total Snapshots: " + _temperatureService.GetTotalTemperatureSnapshotCount().ToString();
         }
 
         private void AlertIfTemperatureIsOutsideThreshold()
@@ -87,8 +70,8 @@ namespace open_dust_monitor.src.forms
             }
             else
             {
-                this.ShowInTaskbar = false;
                 this.WindowState = FormWindowState.Minimized;
+                this.ShowInTaskbar = false;
             }
         }
     }

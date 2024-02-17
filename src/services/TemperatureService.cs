@@ -15,8 +15,7 @@ namespace open_dust_monitor.services
                 DateTime.Now,
                 _hardwareService.GetCpuName(),
                 _hardwareService.GetCurrentCpuLoad(),
-                _hardwareService.GetCurrentCpuTemperature()
-            );
+                _hardwareService.GetCurrentCpuTemperature());
             _temperatureRepository.SaveTemperatureSnapshot(latestTemperatureSnapshot);
             return latestTemperatureSnapshot;
         }
@@ -79,6 +78,22 @@ namespace open_dust_monitor.services
         public void StopTemperatureMonitoring()
         {
             _hardwareService.StopHardwareMonitoring();
+        }
+
+        internal string GetTemperatureSnapshotLabel(TemperatureSnapshot snapshot, int timerInterval)
+        {
+            return "Latest Snapshot:" +
+            "\n Timestamp: " + snapshot.Timestamp +
+            "\n CPU: " + snapshot.CpuName +
+            "\n Temperature: " + snapshot.CpuPackageTemperature + "°C" +
+            "\n Utilization: " + snapshot.CpuPackageUtilization + "%" +
+            "\n" +
+            "\nKey Variables:" +
+            "\n alertThresholdTemperature: " + GetAlertThresholdTemperature() + "°C" +
+            "\n recentAverageTemperature: " + GetRecentAverageTemperature() + "°C" +
+            "\n recentAverageIsOk: " + IsRecentAverageTemperatureWithinThreshold().ToString() +
+            "\n totalSnapshots: " + GetTotalTemperatureSnapshotCount().ToString() +
+            "\n snapshotFrequency: " + timerInterval / 1000 + " seconds";
         }
     }
 }

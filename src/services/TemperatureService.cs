@@ -69,35 +69,35 @@ namespace open_dust_monitor.services
             var highSnapshots = _temperatureRepository.GetLoadedHighSnapshots();
             var maxSnapshots = _temperatureRepository.GetLoadedMaxSnapshots();
             return
-                "Latest Snapshot:" +
-                "\n Timestamp: " + snapshot.Timestamp +
-                "\n CPU: " + snapshot.CpuName +
-                "\n Temperature: " + snapshot.CpuTemperature + "°C" +
-                "\n Utilization: " + snapshot.CpuLoad + "%" +
-                "\n\n" +
-                "Snapshots:" +
-                "\n idleSnapshotCount: " + idleSnapshots.Count() +
-                "\n lowSnapshotCount: " + lowSnapshots.Count() +
-                "\n mediumSnapshotCount: " + mediumSnapshots.Count() +
-                "\n highSnapshotCount: " + highSnapshots.Count() +
-                "\n maxSnapshotCount: " + maxSnapshots.Count() +
-                "\n totalSnapshotCount: " + _temperatureRepository.GetLoadedTemperatureSnapshots().Count() +
-                "\n snapshotFrequency: " + timerInterval / 1000 + " seconds" +
-                "\n\n" +
-                "Average Temperatures:" +
-                "\n idleRecentAverage: " + GetRecentAverageTemperature(idleSnapshots) + "°C" +
-                "\n lowRecentAverage: " + GetRecentAverageTemperature(lowSnapshots) + "°C" +
-                "\n mediumRecentAverage: " + GetRecentAverageTemperature(mediumSnapshots) + "°C" +
-                "\n highRecentAverage: " + GetRecentAverageTemperature(highSnapshots) + "°C" +
-                "\n maxRecentAverage: " + GetRecentAverageTemperature(maxSnapshots) + "°C" +
-                "\n\n" +
-                "Alert Thresholds:" +
-                "\n idleAlertThreshold: " + GetAlertThresholdTemperature(idleSnapshots) + "°C" +
-                "\n lowAlertThreshold: " + GetAlertThresholdTemperature(lowSnapshots) + "°C" +
-                "\n mediumAlertThreshold: " + GetAlertThresholdTemperature(mediumSnapshots) + "°C" +
-                "\n highAlertThreshold: " + GetAlertThresholdTemperature(highSnapshots) + "°C" +
-                "\n maxAlertThreshold: " + GetAlertThresholdTemperature(maxSnapshots) + "°C" +
-                "\n recentAveragesAreOk: " + AreRecentAverageTemperaturesNormal().ToString();
+                "Latest Snapshot:"
+                + "\n Timestamp: " + snapshot.Timestamp
+                + "\n CPU: " + snapshot.CpuName
+                + "\n Temperature: " + snapshot.CpuTemperature + "°C"
+                + "\n Utilization: " + snapshot.CpuLoad + "%"
+                + "\n\n"
+                + "Snapshots:"
+                + "\n idleSnapshotCount: " + idleSnapshots.Count()
+                + "\n lowSnapshotCount: " + lowSnapshots.Count()
+                + "\n mediumSnapshotCount: " + mediumSnapshots.Count()
+                + "\n highSnapshotCount: " + highSnapshots.Count()
+                + "\n maxSnapshotCount: " + maxSnapshots.Count()
+                + "\n totalSnapshotCount: " + _temperatureRepository.GetLoadedTemperatureSnapshots().Count()
+                + "\n snapshotFrequency: " + timerInterval / 1000 + " seconds"
+                + "\n\n"
+                + "Average Temperatures:"
+                + "\n idleRecentAverage: " + GetRecentAverageTemperature(idleSnapshots) + "°C"
+                + "\n lowRecentAverage: " + GetRecentAverageTemperature(lowSnapshots) + "°C"
+                + "\n mediumRecentAverage: " + GetRecentAverageTemperature(mediumSnapshots) + "°C"
+                + "\n highRecentAverage: " + GetRecentAverageTemperature(highSnapshots) + "°C"
+                + "\n maxRecentAverage: " + GetRecentAverageTemperature(maxSnapshots) + "°C"
+                + "\n\n"
+                + "Alert Thresholds:"
+                + "\n idleAlertThreshold: " + GetAlertThresholdTemperature(idleSnapshots) + "°C"
+                + "\n lowAlertThreshold: " + GetAlertThresholdTemperature(lowSnapshots) + "°C"
+                + "\n mediumAlertThreshold: " + GetAlertThresholdTemperature(mediumSnapshots) + "°C"
+                + "\n highAlertThreshold: " + GetAlertThresholdTemperature(highSnapshots) + "°C"
+                + "\n maxAlertThreshold: " + GetAlertThresholdTemperature(maxSnapshots) + "°C"
+                + "\n recentAveragesAreOk: " + AreRecentAverageTemperaturesNormal().ToString();
         }
 
         public void StopTemperatureMonitoring()

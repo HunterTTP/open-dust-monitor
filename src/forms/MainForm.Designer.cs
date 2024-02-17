@@ -60,8 +60,8 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.Control;
-            ClientSize = new Size(336, 650);
+            BackColor = SystemColors.ButtonHighlight;
+            ClientSize = new Size(279, 656);
             Controls.Add(label1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";

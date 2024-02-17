@@ -56,18 +56,24 @@ namespace open_dust_monitor.services
 
         internal string GetTemperatureSnapshotLabel(TemperatureSnapshot snapshot, int timerInterval)
         {
-            return "Latest Snapshot:" +
-            "\n Timestamp: " + snapshot.Timestamp +
-            "\n CPU: " + snapshot.CpuName +
-            "\n Temperature: " + snapshot.CpuTemperature + "°C" +
-            "\n Utilization: " + snapshot.CpuLoad + "%" +
-            "\n" +
-            "\nKey Variables:" +
-            "\n alertThresholdTemperature: " + GetAlertThresholdTemperature() + "°C" +
-            "\n recentAverageTemperature: " + GetRecentAverageTemperature() + "°C" +
-            "\n recentAverageIsOk: " + IsRecentAverageTemperatureWithinThreshold().ToString() +
-            "\n totalSnapshots: " + _temperatureRepository.GetLoadedTemperatureSnapshotsCount().ToString() +
-            "\n snapshotFrequency: " + timerInterval / 1000 + " seconds";
+            return
+                "Latest Snapshot:" +
+                "\n Timestamp: " + snapshot.Timestamp +
+                "\n CPU: " + snapshot.CpuName +
+                "\n Temperature: " + snapshot.CpuTemperature + "°C" +
+                "\n Utilization: " + snapshot.CpuLoad + "%" +
+                "\n" +
+                "\nKey Variables:" +
+                "\n alertThresholdTemperature: " + GetAlertThresholdTemperature() + "°C" +
+                "\n recentAverageTemperature: " + GetRecentAverageTemperature() + "°C" +
+                "\n recentAverageIsOk: " + IsRecentAverageTemperatureWithinThreshold().ToString() +
+                "\n idleSnapshotCount: " + _temperatureRepository.GetLoadedIdleSnapshots().Count() +
+                "\n lowSnapshotCount: " + _temperatureRepository.GetLoadedLowSnapshots().Count() +
+                "\n mediumSnapshotCount: " + _temperatureRepository.GetLoadedMediumSnapshots().Count() +
+                "\n highSnapshotCount: " + _temperatureRepository.GetLoadedHighSnapshots().Count() +
+                "\n maxSnapshotCount: " + _temperatureRepository.GetLoadedHighSnapshots().Count() +
+                "\n totalSnapshotCount: " + _temperatureRepository.GetLoadedTemperatureSnapshots().Count() +
+                "\n snapshotFrequency: " + timerInterval / 1000 + " seconds";
         }
 
         public void StopTemperatureMonitoring()

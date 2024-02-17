@@ -15,6 +15,8 @@ namespace open_dust_monitor.src.forms
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
             notifyIcon1.MouseDown += new MouseEventHandler(NotifyIcon_Clicked);
             timer1.Tick += new EventHandler(Timer_Tick);
+            string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
+            this.Icon = new Icon(iconPath);
         }
 
         private void MainForm_Load(object sender, EventArgs e)

@@ -25,7 +25,7 @@ namespace open_dust_monitor.repositories
             _loadedLowSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "low").ToList();
             _loadedMediumSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "medium").ToList();
             _loadedHighSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "high").ToList();
-            _loadedIdleSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "max").ToList();
+            _loadedMaxSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "max").ToList();
         }
 
         public void LoadTemperatureSnapshot(TemperatureSnapshot snapshot)
@@ -50,6 +50,31 @@ namespace open_dust_monitor.repositories
             {
                 _loadedMaxSnapshots.Add(snapshot);
             }
+        }
+
+        public List<TemperatureSnapshot> GetLoadedIdleSnapshots()
+        {
+            return _loadedIdleSnapshots;
+        }
+
+        public List<TemperatureSnapshot> GetLoadedLowSnapshots()
+        {
+            return _loadedLowSnapshots;
+        }
+
+        public List<TemperatureSnapshot> GetLoadedMediumSnapshots()
+        {
+            return _loadedMediumSnapshots;
+        }
+
+        public List<TemperatureSnapshot> GetLoadedHighSnapshots()
+        {
+            return _loadedHighSnapshots;
+        }
+
+        public List<TemperatureSnapshot> GetLoadedMaxSnapshots()
+        {
+            return _loadedMaxSnapshots;
         }
 
         private void EnsureTemperatureHistoryCsvExists()
@@ -102,7 +127,7 @@ namespace open_dust_monitor.repositories
                 csvRowValues[1], //CpuName
                 float.Parse(csvRowValues[2]), //CpuTemperature
                 float.Parse(csvRowValues[3]), //CpuLoad
-                csvRowValues[1]); //CpuLoadRange
+                csvRowValues[4]); //CpuLoadRange
         }
 
         public List<TemperatureSnapshot> GetLoadedTemperatureSnapshots()

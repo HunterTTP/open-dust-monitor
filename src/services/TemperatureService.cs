@@ -20,46 +20,14 @@ namespace open_dust_monitor.services
             return latestTemperatureSnapshot;
         }
 
-        public string GetLoadSensorName()
-        {
-            var cpuLoadSensor = _hardwareService.GetCpuLoadSensor();
-            return cpuLoadSensor.Name;
-        }
-
-        public int GetTotalTemperatureSnapshotCount()
-        {
-            return _temperatureRepository.GetAllLoadedTemperatureSnapshots().Count;
-        }
-
-        public List<TemperatureSnapshot> GetAllTemperatureSnapshots()
-        {
-            return _temperatureRepository.GetAllLoadedTemperatureSnapshots();
-        }
-
         public bool IsRecentAverageTemperatureWithinThreshold()
         {
             return GetRecentAverageTemperature() <= GetAlertThresholdTemperature();
         }
 
-        public float GetAlertThresholdTemperature()
-        {
-            return (float)Math.Round(GetBaselineTemperature() * 1.15f);
-        }
-
-        private float GetBaselineTemperature()
-        {
-            var temperatureSnapshots = _temperatureRepository.GetAllLoadedTemperatureSnapshots();
-            var endDate = temperatureSnapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
-            return temperatureSnapshots
-                .Where(snapshot => snapshot.Timestamp <= endDate)
-                .Select(snapshot => snapshot.CpuPackageTemperature)
-                .DefaultIfEmpty(0)
-                .Average();
-        }
-
         public float GetRecentAverageTemperature()
         {
-            var temperatureSnapshots = _temperatureRepository.GetAllLoadedTemperatureSnapshots();
+            var temperatureSnapshots = _temperatureRepository.GetLoadedTemperatureSnapshots();
             var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-7);
             var recentAverageTemperature = temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp >= endDate)
@@ -69,15 +37,20 @@ namespace open_dust_monitor.services
             return (float)Math.Round(recentAverageTemperature);
         }
 
-        public List<TemperatureSnapshot> GetRecentSnapshots()
+        public float GetAlertThresholdTemperature()
         {
-            var snapshots = _temperatureRepository.GetAllLoadedTemperatureSnapshots().OrderBy(snapshot => snapshot.Timestamp).ToList();
-            return snapshots.Take(20).ToList();
+            return (float)Math.Round(GetBaselineTemperature() + 5f);
         }
 
-        public void StopTemperatureMonitoring()
+        private float GetBaselineTemperature()
         {
-            _hardwareService.StopHardwareMonitoring();
+            var temperatureSnapshots = _temperatureRepository.GetLoadedTemperatureSnapshots();
+            var endDate = temperatureSnapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
+            return temperatureSnapshots
+                .Where(snapshot => snapshot.Timestamp <= endDate)
+                .Select(snapshot => snapshot.CpuPackageTemperature)
+                .DefaultIfEmpty(0)
+                .Average();
         }
 
         internal string GetTemperatureSnapshotLabel(TemperatureSnapshot snapshot, int timerInterval)
@@ -92,8 +65,13 @@ namespace open_dust_monitor.services
             "\n alertThresholdTemperature: " + GetAlertThresholdTemperature() + "°C" +
             "\n recentAverageTemperature: " + GetRecentAverageTemperature() + "°C" +
             "\n recentAverageIsOk: " + IsRecentAverageTemperatureWithinThreshold().ToString() +
-            "\n totalSnapshots: " + GetTotalTemperatureSnapshotCount().ToString() +
+            "\n totalSnapshots: " + _temperatureRepository.GetLoadedTemperatureSnapshotsCount().ToString() +
             "\n snapshotFrequency: " + timerInterval / 1000 + " seconds";
+        }
+
+        public void StopTemperatureMonitoring()
+        {
+            _hardwareService.StopHardwareMonitoring();
         }
     }
 }

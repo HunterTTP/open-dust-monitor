@@ -64,10 +64,11 @@ namespace open_dust_monitor.repositories
                 DateTime.Parse(csvRowValues[0]),
                 csvRowValues[1],
                 float.Parse(csvRowValues[2]),
-                float.Parse(csvRowValues[3])
-            );
+                float.Parse(csvRowValues[3]));
         }
 
-        public List<TemperatureSnapshot> GetAllLoadedTemperatureSnapshots() { return _loadedSnapshots; }
+        public List<TemperatureSnapshot> GetLoadedTemperatureSnapshots() { return _loadedSnapshots; }
+
+        public int GetLoadedTemperatureSnapshotsCount() { return _loadedSnapshots.Count; }
     }
 }

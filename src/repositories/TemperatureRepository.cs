@@ -34,19 +34,19 @@ namespace open_dust_monitor.repositories
             {
                 _loadedIdleSnapshots.Add(snapshot);
             }
-            if (snapshot.CpuLoadRange.Equals("low"))
+            else if (snapshot.CpuLoadRange.Equals("low"))
             {
                 _loadedLowSnapshots.Add(snapshot);
             }
-            if (snapshot.CpuLoadRange.Equals("medium"))
+            else if (snapshot.CpuLoadRange.Equals("medium"))
             {
                 _loadedMediumSnapshots.Add(snapshot);
             }
-            if (snapshot.CpuLoadRange.Equals("high"))
+            else if (snapshot.CpuLoadRange.Equals("high"))
             {
                 _loadedHighSnapshots.Add(snapshot);
             }
-            if (snapshot.CpuLoadRange.Equals("max"))
+            else if (snapshot.CpuLoadRange.Equals("max"))
             {
                 _loadedMaxSnapshots.Add(snapshot);
             }
@@ -122,12 +122,12 @@ namespace open_dust_monitor.repositories
 
         private static TemperatureSnapshot MapCsvRowToTemperatureSnapshot(string[] csvRowValues)
         {
-            return new TemperatureSnapshot(
-                DateTime.Parse(csvRowValues[0]), //Timestamp
-                csvRowValues[1], //CpuName
-                float.Parse(csvRowValues[2]), //CpuTemperature
-                float.Parse(csvRowValues[3]), //CpuLoad
-                csvRowValues[4]); //CpuLoadRange
+            var dateTime = DateTime.Parse(csvRowValues[0]);
+            var cpuName = csvRowValues[1];
+            var cpuTemperature = float.Parse(csvRowValues[2]);
+            var cpuLoad = float.Parse(csvRowValues[3]);
+            var cpuLoadRange = csvRowValues[4];
+            return new TemperatureSnapshot(dateTime, cpuName, cpuTemperature, cpuLoad, cpuLoadRange);
         }
 
         public List<TemperatureSnapshot> GetLoadedTemperatureSnapshots()
@@ -142,12 +142,11 @@ namespace open_dust_monitor.repositories
 
         public int GetLoadedTemperatureSnapshotsCount()
         {
-            return
-                _loadedIdleSnapshots.Count +
-                _loadedLowSnapshots.Count +
-                _loadedMediumSnapshots.Count +
-                _loadedHighSnapshots.Count +
-                _loadedMaxSnapshots.Count;
+            return _loadedIdleSnapshots.Count
+                + _loadedLowSnapshots.Count
+                + _loadedMediumSnapshots.Count
+                + _loadedHighSnapshots.Count
+                + _loadedMaxSnapshots.Count;
         }
     }
 }

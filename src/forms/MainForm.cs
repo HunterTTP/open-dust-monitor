@@ -39,7 +39,7 @@ namespace open_dust_monitor.src.forms
 
         private void AlertIfTemperatureIsOutsideThreshold()
         {
-            if (!_temperatureService.IsRecentAverageTemperatureWithinThreshold())
+            if (!_temperatureService.AreRecentAverageTemperaturesNormal())
                 MessageBox.Show(
                     "Your PC is running warmer than usual. Please clean the fans.",
                     "Open Dust Monitor",

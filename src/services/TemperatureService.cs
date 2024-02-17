@@ -21,16 +21,23 @@ namespace open_dust_monitor.services
             return snapshot;
         }
 
-        public bool IsRecentAverageTemperatureWithinThreshold()
+        public bool AreRecentAverageTemperaturesNormal()
         {
-            return GetRecentAverageTemperature() <= GetAlertThresholdTemperature();
+            return IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedIdleSnapshots())
+                && IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedLowSnapshots())
+                && IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedMediumSnapshots());
         }
 
-        public float GetRecentAverageTemperature()
+        public bool IsRecentAverageTemperatureNormal(List<TemperatureSnapshot> snapshots)
         {
-            var temperatureSnapshots = _temperatureRepository.GetLoadedTemperatureSnapshots();
-            var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-7);
-            var recentAverageTemperature = temperatureSnapshots
+            return GetRecentAverageTemperature(snapshots) <= GetAlertThresholdTemperature(snapshots);
+        }
+
+        public static float GetRecentAverageTemperature(List<TemperatureSnapshot> snapshots)
+        {
+            if (snapshots == null || snapshots.Count == 0) { return 0; }
+            var endDate = snapshots.Max(snapshot => snapshot.Timestamp).AddDays(-7);
+            var recentAverageTemperature = snapshots
                 .Where(snapshot => snapshot.Timestamp >= endDate)
                 .Select(snapshot => snapshot.CpuTemperature)
                 .DefaultIfEmpty(0)
@@ -38,42 +45,59 @@ namespace open_dust_monitor.services
             return (float)Math.Round(recentAverageTemperature);
         }
 
-        public float GetAlertThresholdTemperature()
+        public float GetAlertThresholdTemperature(List<TemperatureSnapshot> snapshots)
         {
-            return (float)Math.Round(GetBaselineTemperature() + 5f);
+            return (float)Math.Round(GetBaselineTemperature(snapshots) + 5f);
         }
 
-        private float GetBaselineTemperature()
+        private float GetBaselineTemperature(List<TemperatureSnapshot> snapshots)
         {
-            var temperatureSnapshots = _temperatureRepository.GetLoadedTemperatureSnapshots();
-            var endDate = temperatureSnapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
-            return temperatureSnapshots
+            if (snapshots == null || snapshots.Count == 0) { return 0; }
+            var endDate = snapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
+            return snapshots
                 .Where(snapshot => snapshot.Timestamp <= endDate)
                 .Select(snapshot => snapshot.CpuTemperature)
                 .DefaultIfEmpty(0)
                 .Average();
         }
 
-        internal string GetTemperatureSnapshotLabel(TemperatureSnapshot snapshot, int timerInterval)
+        public string GetTemperatureSnapshotLabel(TemperatureSnapshot snapshot, int timerInterval)
         {
+            var idleSnapshots = _temperatureRepository.GetLoadedIdleSnapshots();
+            var lowSnapshots = _temperatureRepository.GetLoadedLowSnapshots();
+            var mediumSnapshots = _temperatureRepository.GetLoadedMediumSnapshots();
+            var highSnapshots = _temperatureRepository.GetLoadedHighSnapshots();
+            var maxSnapshots = _temperatureRepository.GetLoadedMaxSnapshots();
             return
                 "Latest Snapshot:" +
                 "\n Timestamp: " + snapshot.Timestamp +
                 "\n CPU: " + snapshot.CpuName +
                 "\n Temperature: " + snapshot.CpuTemperature + "°C" +
                 "\n Utilization: " + snapshot.CpuLoad + "%" +
-                "\n" +
-                "\nKey Variables:" +
-                "\n alertThresholdTemperature: " + GetAlertThresholdTemperature() + "°C" +
-                "\n recentAverageTemperature: " + GetRecentAverageTemperature() + "°C" +
-                "\n recentAverageIsOk: " + IsRecentAverageTemperatureWithinThreshold().ToString() +
-                "\n idleSnapshotCount: " + _temperatureRepository.GetLoadedIdleSnapshots().Count() +
-                "\n lowSnapshotCount: " + _temperatureRepository.GetLoadedLowSnapshots().Count() +
-                "\n mediumSnapshotCount: " + _temperatureRepository.GetLoadedMediumSnapshots().Count() +
-                "\n highSnapshotCount: " + _temperatureRepository.GetLoadedHighSnapshots().Count() +
-                "\n maxSnapshotCount: " + _temperatureRepository.GetLoadedHighSnapshots().Count() +
+                "\n\n" +
+                "Snapshots:" +
+                "\n idleSnapshotCount: " + idleSnapshots.Count() +
+                "\n lowSnapshotCount: " + lowSnapshots.Count() +
+                "\n mediumSnapshotCount: " + mediumSnapshots.Count() +
+                "\n highSnapshotCount: " + highSnapshots.Count() +
+                "\n maxSnapshotCount: " + maxSnapshots.Count() +
                 "\n totalSnapshotCount: " + _temperatureRepository.GetLoadedTemperatureSnapshots().Count() +
-                "\n snapshotFrequency: " + timerInterval / 1000 + " seconds";
+                "\n snapshotFrequency: " + timerInterval / 1000 + " seconds" +
+                "\n\n" +
+                "Average Temperatures:" +
+                "\n idleRecentAverage: " + GetRecentAverageTemperature(idleSnapshots) + "°C" +
+                "\n lowRecentAverage: " + GetRecentAverageTemperature(lowSnapshots) + "°C" +
+                "\n mediumRecentAverage: " + GetRecentAverageTemperature(mediumSnapshots) + "°C" +
+                "\n highRecentAverage: " + GetRecentAverageTemperature(highSnapshots) + "°C" +
+                "\n maxRecentAverage: " + GetRecentAverageTemperature(maxSnapshots) + "°C" +
+                "\n\n" +
+                "Alert Thresholds:" +
+                "\n idleAlertThreshold: " + GetAlertThresholdTemperature(idleSnapshots) + "°C" +
+                "\n lowAlertThreshold: " + GetAlertThresholdTemperature(lowSnapshots) + "°C" +
+                "\n mediumAlertThreshold: " + GetAlertThresholdTemperature(mediumSnapshots) + "°C" +
+                "\n highAlertThreshold: " + GetAlertThresholdTemperature(highSnapshots) + "°C" +
+                "\n maxAlertThreshold: " + GetAlertThresholdTemperature(maxSnapshots) + "°C" +
+                "\n recentAveragesAreOk: " + AreRecentAverageTemperaturesNormal().ToString();
         }
 
         public void StopTemperatureMonitoring()

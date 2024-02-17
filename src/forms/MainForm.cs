@@ -1,9 +1,8 @@
 ﻿using open_dust_monitor.models;
 using open_dust_monitor.services;
 using open_dust_monitor.src.Handler;
-using System.Timers;
 
-namespace open_dust_monitor.forms
+namespace open_dust_monitor.src.forms
 {
     public partial class MainForm : Form
     {
@@ -13,68 +12,51 @@ namespace open_dust_monitor.forms
         {
             InitializeComponent();
             _temperatureService = InstanceHandler.GetTemperatureService();
+            this.Resize += new EventHandler(MainForm_Minimize);
+            this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
+            notifyIcon1.MouseDown += new MouseEventHandler(NotifyIcon_Clicked);
+            timer1.Tick += new EventHandler(Timer_Tick);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            UpdateFormWithCpuInfo();
+            _ = UpdateFormWithCpuInfo();
         }
 
-        private void MainForm_Resize(object sender, EventArgs e)
+        private void Timer_Tick(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                ShowInTaskbar = false;
-            }
+            _ = UpdateFormWithCpuInfo();
         }
 
-        private void SnapshotTimer_Elapse(object sender, ElapsedEventArgs e)
+        private async Task UpdateFormWithCpuInfo()
         {
-            //UpdateFormWithCpuInfo();
-        }
-
-        private void UpdateFormWithCpuInfo()
-        {
-            var latestTemperatureSnapshot = _temperatureService.GetLatestTemperatureSnapshot();
-            UpdateGridView(latestTemperatureSnapshot);
+            var latestTemperatureSnapshot = await Task.Run(() => _temperatureService.GetLatestTemperatureSnapshot());
+            UpdateSnapshotLabel(latestTemperatureSnapshot);
             AlertIfTemperatureIsOutsideThreshold();
         }
 
-        private void UpdateGridView(TemperatureSnapshot snapshot)
+        private void UpdateSnapshotLabel(TemperatureSnapshot snapshot)
         {
-            AddOrUpdateRowInDataGridView(0, "CPU", snapshot.CpuName);
-            AddOrUpdateRowInDataGridView(1, "Temperature", snapshot.CpuPackageTemperature + "°C");
-            AddOrUpdateRowInDataGridView(2, "Load", snapshot.CpuPackageUtilization + "%");
-            AddOrUpdateRowInDataGridView(3, "alertThresholdTemperature", _temperatureService.GetAlertThresholdTemperature() + "°C");
-            AddOrUpdateRowInDataGridView(4, "recentAverageTemperature", _temperatureService.GetRecentAverageTemperature() + "°C");
-            AddOrUpdateRowInDataGridView(5, "temperatureAverageIsOk", _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString());
-            AddOrUpdateRowInDataGridView(6, "Timestamp", snapshot.Timestamp.ToString());
-            AddOrUpdateRowInDataGridView(7, "Interval", timer1.Interval / 1000 + " seconds");
-            AddOrUpdateRowInDataGridView(8, "Total Snpashots", _temperatureService.GetTotalTemperatureSnapshotCount().ToString());
-        }
-
-        private void AddOrUpdateRowInDataGridView(int rowIndex, string value1, string value2)
-        {
-            if (rowIndex >= 0 && rowIndex < dataGridView1.Rows.Count)
-            {
-                dataGridView1.Rows[rowIndex].Cells[0].Value = value1;
-                dataGridView1.Rows[rowIndex].Cells[1].Value = value2;
-            }
-            else
-            {
-                var newRow = new DataGridViewRow();
-                newRow.CreateCells(dataGridView1);
-                newRow.Cells[0].Value = value1;
-                newRow.Cells[1].Value = value2;
-                dataGridView1.Rows.Add(newRow);
-            }
+            label1.Text =
+                "Latest Snapshot:" +
+                "\n Timestamp: " + snapshot.Timestamp +
+                "\n CPU: " + snapshot.CpuName +
+                "\n Temperature: " + snapshot.CpuPackageTemperature + "°C" +
+                "\n Utilization: " + snapshot.CpuPackageUtilization + "%" +
+                "\n" +
+                "\nKey Variables:" +
+                "\n alertThresholdTemperature: " + _temperatureService.GetAlertThresholdTemperature() + "°C" +
+                "\n recentAverageTemperature: " + _temperatureService.GetRecentAverageTemperature() + "°C" +
+                "\n recentAverageIsOk: " + _temperatureService.IsRecentAverageTemperatureWithinThreshold().ToString() +
+                "\n timestampFrequency: " + timer1.Interval / 1000 + " seconds" +
+                "\n Total Snapshots: " + _temperatureService.GetTotalTemperatureSnapshotCount().ToString();
         }
 
         private void AlertIfTemperatureIsOutsideThreshold()
         {
             if (!_temperatureService.IsRecentAverageTemperatureWithinThreshold())
                 MessageBox.Show(
-                    "Your PC has running warmer than usual. Please clean the fans.",
+                    "Your PC is running warmer than usual. Please clean the fans.",
                     "Open Dust Monitor",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information,
@@ -82,30 +64,29 @@ namespace open_dust_monitor.forms
                     MessageBoxOptions.DefaultDesktopOnly);
         }
 
-        private void MinimizeButton_Click(object sender, EventArgs e)
+        private void MainForm_Minimize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                ShowInTaskbar = false;
+            }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             _temperatureService.StopTemperatureMonitoring();
-            this.Close();
         }
 
-        private void CloseButton_Click(object sender, EventArgs e)
+        private void NotifyIcon_Clicked(object sender, MouseEventArgs e)
         {
-            this.Visible = false;
-            this.ShowInTaskbar = false;
-            this.WindowState = FormWindowState.Minimized;
-        }
-
-        private void SysTray_Click(object sender, MouseEventArgs e)
-        {
-            if (this.Visible == false)
+            if (this.WindowState == FormWindowState.Minimized)
             {
                 this.ShowInTaskbar = true;
                 this.WindowState = FormWindowState.Normal;
-                this.Visible = true;
+                this.Activate();
             }
             else
             {
-                this.Visible = false;
                 this.ShowInTaskbar = false;
                 this.WindowState = FormWindowState.Minimized;
             }

@@ -36,6 +36,30 @@ namespace open_dust_monitor.services
             return (float)Math.Round(_thisCpuLoadSensor.Value.GetValueOrDefault(0));
         }
 
+        public string GetCurrentCpuLoadRange(float cpuLoad)
+        {
+            if (cpuLoad <= 10)
+            {
+                return "idle";
+            }
+            else if (cpuLoad <= 30)
+            {
+                return "low";
+            }
+            else if (cpuLoad <= 70)
+            {
+                return "medium";
+            }
+            else if (cpuLoad <= 90)
+            {
+                return "high";
+            }
+            else
+            {
+                return "max";
+            }
+        }
+
         public ISensor GetCpuLoadSensor()
         {
             return _thisCpuLoadSensor;

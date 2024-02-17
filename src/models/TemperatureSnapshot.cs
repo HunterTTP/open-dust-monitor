@@ -3,22 +3,24 @@
     public class TemperatureSnapshot(
         DateTime timestamp,
         string cpuName,
-        float cpuPackageUtilization,
-        float cpuPackageTemperature)
+        float cpuTemperature,
+        float cpuLoad,
+        string cpuLoadRange)
     {
         public DateTime Timestamp { get; } = timestamp;
         public string CpuName { get; } = cpuName;
-        public float CpuPackageUtilization { get; } = cpuPackageUtilization;
-        public float CpuPackageTemperature { get; } = cpuPackageTemperature;
+        public float CpuTemperature { get; } = cpuTemperature;
+        public float CpuLoad { get; } = cpuLoad;
+        public string CpuLoadRange { get; } = cpuLoadRange;
 
         public static string GetCsvRowHeaders()
         {
-            return "Timestamp,CpuName,CpuPackageUtilization,CpuPackageTemperature";
+            return "Timestamp,CpuName,CpuTemperature,CpuLoad,CpuLoadRange";
         }
 
         public string GetAsCsvRow()
         {
-            return Timestamp + "," + CpuName + "," + CpuPackageUtilization + "," + CpuPackageTemperature;
+            return Timestamp + "," + CpuName + "," + CpuTemperature + "," + CpuLoad + "," + CpuLoadRange;
         }
     }
 }

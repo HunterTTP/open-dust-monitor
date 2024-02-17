@@ -11,13 +11,14 @@ namespace open_dust_monitor.services
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
-            var latestTemperatureSnapshot = new TemperatureSnapshot(
-                DateTime.Now,
-                _hardwareService.GetCpuName(),
-                _hardwareService.GetCurrentCpuLoad(),
-                _hardwareService.GetCurrentCpuTemperature());
-            _temperatureRepository.SaveTemperatureSnapshot(latestTemperatureSnapshot);
-            return latestTemperatureSnapshot;
+            var dateTime = DateTime.Now;
+            var cpuName = _hardwareService.GetCpuName();
+            var cpuTemperature = _hardwareService.GetCurrentCpuTemperature();
+            var cpuLoad = _hardwareService.GetCurrentCpuLoad();
+            var cpuLoadRange = _hardwareService.GetCurrentCpuLoadRange(cpuLoad);
+            var snapshot = new TemperatureSnapshot(dateTime, cpuName, cpuTemperature, cpuLoad, cpuLoadRange);
+            _temperatureRepository.SaveTemperatureSnapshot(snapshot);
+            return snapshot;
         }
 
         public bool IsRecentAverageTemperatureWithinThreshold()
@@ -31,7 +32,7 @@ namespace open_dust_monitor.services
             var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-7);
             var recentAverageTemperature = temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp >= endDate)
-                .Select(snapshot => snapshot.CpuPackageTemperature)
+                .Select(snapshot => snapshot.CpuTemperature)
                 .DefaultIfEmpty(0)
                 .Average();
             return (float)Math.Round(recentAverageTemperature);
@@ -48,7 +49,7 @@ namespace open_dust_monitor.services
             var endDate = temperatureSnapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
             return temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp <= endDate)
-                .Select(snapshot => snapshot.CpuPackageTemperature)
+                .Select(snapshot => snapshot.CpuTemperature)
                 .DefaultIfEmpty(0)
                 .Average();
         }
@@ -58,8 +59,8 @@ namespace open_dust_monitor.services
             return "Latest Snapshot:" +
             "\n Timestamp: " + snapshot.Timestamp +
             "\n CPU: " + snapshot.CpuName +
-            "\n Temperature: " + snapshot.CpuPackageTemperature + "°C" +
-            "\n Utilization: " + snapshot.CpuPackageUtilization + "%" +
+            "\n Temperature: " + snapshot.CpuTemperature + "°C" +
+            "\n Utilization: " + snapshot.CpuLoad + "%" +
             "\n" +
             "\nKey Variables:" +
             "\n alertThresholdTemperature: " + GetAlertThresholdTemperature() + "°C" +

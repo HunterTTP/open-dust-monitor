@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace open_dust_monitor.models
+﻿namespace open_dust_monitor.models
 {
     public class TemperatureSnapshot(
         DateTime timestamp,

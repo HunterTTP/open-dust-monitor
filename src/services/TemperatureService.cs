@@ -29,12 +29,12 @@ namespace open_dust_monitor.services
 
         public int GetTotalTemperatureSnapshotCount()
         {
-            return _temperatureRepository.GetAllTemperatureSnapshots().Count;
+            return _temperatureRepository.GetAllLoadedTemperatureSnapshots().Count;
         }
 
         public List<TemperatureSnapshot> GetAllTemperatureSnapshots()
         {
-            return _temperatureRepository.GetAllTemperatureSnapshots();
+            return _temperatureRepository.GetAllLoadedTemperatureSnapshots();
         }
 
         public bool IsRecentAverageTemperatureWithinThreshold()
@@ -49,7 +49,7 @@ namespace open_dust_monitor.services
 
         private float GetBaselineTemperature()
         {
-            var temperatureSnapshots = _temperatureRepository.GetAllTemperatureSnapshots();
+            var temperatureSnapshots = _temperatureRepository.GetAllLoadedTemperatureSnapshots();
             var endDate = temperatureSnapshots.Min(snapshot => snapshot.Timestamp).AddDays(7);
             return temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp <= endDate)
@@ -60,7 +60,7 @@ namespace open_dust_monitor.services
 
         public float GetRecentAverageTemperature()
         {
-            var temperatureSnapshots = _temperatureRepository.GetAllTemperatureSnapshots();
+            var temperatureSnapshots = _temperatureRepository.GetAllLoadedTemperatureSnapshots();
             var endDate = temperatureSnapshots.Max(snapshot => snapshot.Timestamp).AddDays(-7);
             var recentAverageTemperature = temperatureSnapshots
                 .Where(snapshot => snapshot.Timestamp >= endDate)
@@ -72,10 +72,9 @@ namespace open_dust_monitor.services
 
         public List<TemperatureSnapshot> GetRecentSnapshots()
         {
-            var snapshots = GetAllTemperatureSnapshots().OrderBy(snapshot => snapshot.Timestamp).ToList();
+            var snapshots = _temperatureRepository.GetAllLoadedTemperatureSnapshots().OrderBy(snapshot => snapshot.Timestamp).ToList();
             return snapshots.Take(20).ToList();
         }
-
 
         public void StopTemperatureMonitoring()
         {

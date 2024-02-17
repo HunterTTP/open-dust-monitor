@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using open_dust_monitor.models;
+﻿using open_dust_monitor.models;
 
 namespace open_dust_monitor.repositories
 {
     public class TemperatureRepository
     {
         private readonly string _pathToTemperatureHistoryCsv;
+        private List<TemperatureSnapshot> _loadedSnapshots = [];
 
         public TemperatureRepository()
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             _pathToTemperatureHistoryCsv = Path.Combine(baseDirectory, "temperature_history.csv");
             EnsureTemperatureHistoryCsvExists();
+            _loadedSnapshots.AddRange(GetAllTemperatureSnapshotsFromCsv());
         }
 
         private void EnsureTemperatureHistoryCsvExists()
@@ -34,13 +33,14 @@ namespace open_dust_monitor.repositories
 
         public void SaveTemperatureSnapshot(TemperatureSnapshot temperatureSnapshot)
         {
+            _loadedSnapshots.Add(temperatureSnapshot);
             using (var csvAppender = File.AppendText(_pathToTemperatureHistoryCsv))
             {
                 csvAppender.WriteLine(temperatureSnapshot.GetAsCsvRow());
             }
         }
 
-        public List<TemperatureSnapshot> GetAllTemperatureSnapshots()
+        public List<TemperatureSnapshot> GetAllTemperatureSnapshotsFromCsv()
         {
             var temperatureSnapshots = new List<TemperatureSnapshot>();
             using (var reader = new StreamReader(_pathToTemperatureHistoryCsv))
@@ -67,5 +67,7 @@ namespace open_dust_monitor.repositories
                 float.Parse(csvRowValues[3])
             );
         }
+
+        public List<TemperatureSnapshot> GetAllLoadedTemperatureSnapshots() { return _loadedSnapshots; }
     }
 }

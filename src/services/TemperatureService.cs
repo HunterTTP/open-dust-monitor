@@ -9,7 +9,7 @@ namespace open_dust_monitor.services
         private readonly HardwareService _hardwareService = InstanceHandler.GetHardwareService();
         private static readonly int snapshotIntervalMillis = 2000;
         private static readonly int minimumMonitoringMinutes = 120;
-        private static readonly int minimumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
+        private static readonly int maximumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
@@ -27,13 +27,12 @@ namespace open_dust_monitor.services
         {
             LogHandler.Logger.Debug("SaveLatestSnapshot snapshot=" + snapshot);
             TemperatureRepository.SaveAndLoadRecentSnapshot(snapshot);
-            TemperatureRepository.SaveAndLoadBaselineSnapshot(snapshot, minimumAlertSnapshots);
+            TemperatureRepository.SaveAndLoadBaselineSnapshot(snapshot, maximumAlertSnapshots);
         }
 
         public bool AreRecentAverageTemperaturesNormal()
         {
-            return
-                IsRecentAverageTemperatureNormal(TemperatureRepository.GetLoadedIdleSnapshots())
+            return IsRecentAverageTemperatureNormal(TemperatureRepository.GetLoadedIdleSnapshots())
                 && IsRecentAverageTemperatureNormal(TemperatureRepository.GetLoadedLowSnapshots())
                 && IsRecentAverageTemperatureNormal(TemperatureRepository.GetLoadedMediumSnapshots())
                 && IsRecentAverageTemperatureNormal(TemperatureRepository.GetLoadedHighSnapshots())
@@ -42,7 +41,7 @@ namespace open_dust_monitor.services
 
         public bool IsRecentAverageTemperatureNormal(List<TemperatureSnapshot> snapshots)
         {
-            if (snapshots.Count < minimumAlertSnapshots) { return true; }
+            if (snapshots.Count < maximumAlertSnapshots) { return true; } //not enough snapshots to alert properly
             return (GetRecentAverageTemperature(snapshots) <= GetAlertThresholdTemperature(snapshots));
         }
 

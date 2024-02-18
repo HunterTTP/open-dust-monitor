@@ -6,18 +6,28 @@ namespace open_dust_monitor.repositories
     public class TemperatureRepository
     {
         private static readonly string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        private static readonly string pathToBaselineSnapshotsCsv = Path.Combine(baseDirectory, "baseline_temperature_snapshots.csv");
-        private static readonly string pathToRecentSnapshotsCsv = Path.Combine(baseDirectory, "recent_temperature_snapshots.csv");
+        private static readonly string csvDirectory = Path.Combine(baseDirectory, "csv");
+        private static readonly string pathToBaselineSnapshotsCsv = Path.Combine(csvDirectory, "baseline_temperature_snapshots.csv");
+        private static readonly string pathToRecentSnapshotsCsv = Path.Combine(csvDirectory, "recent_temperature_snapshots.csv");
         private static List<TemperatureSnapshot> loadedBaselineSnapshots = [];
         private static List<TemperatureSnapshot> loadedRecentSnapshots = [];
         private static readonly int retentionDaysForRecentSnapshots = 3;
 
         public TemperatureRepository()
         {
+            EnsureCsvDirectoryExists(csvDirectory);
             EnsureSnapshotCSVExists(pathToBaselineSnapshotsCsv);
             EnsureSnapshotCSVExists(pathToRecentSnapshotsCsv);
             loadedBaselineSnapshots = GetAllTemperatureSnapshotsFromCsv(pathToBaselineSnapshotsCsv);
             loadedRecentSnapshots = GetAllTemperatureSnapshotsFromCsv(pathToRecentSnapshotsCsv);
+        }
+
+        private void EnsureCsvDirectoryExists(string csvDirectory)
+        {
+            if (!Directory.Exists(csvDirectory))
+            {
+                Directory.CreateDirectory(csvDirectory);
+            }
         }
 
         private static void EnsureSnapshotCSVExists(string pathToCsv)

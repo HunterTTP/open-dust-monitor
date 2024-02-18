@@ -11,19 +11,22 @@ namespace open_dust_monitor.src.Handler
 
         public static HardwareService GetHardwareService()
         {
-            if (_hardwareService == null) { _hardwareService = new HardwareService(); }
+            _hardwareService ??= new HardwareService();
+            LogHandler.Logger.Debug("GetHardwareService complete");
             return _hardwareService;
         }
 
         public static TemperatureService GetTemperatureService()
         {
-            if (_temperatureService == null) { _temperatureService = new TemperatureService(); }
+            _temperatureService ??= new TemperatureService();
+            LogHandler.Logger.Debug("GetTemperatureService complete");
             return _temperatureService;
         }
 
         public static TemperatureRepository GetTemperatureRepository()
         {
-            if (_temperatureRepository == null) { _temperatureRepository = new TemperatureRepository(); }
+            _temperatureRepository ??= new TemperatureRepository();
+            LogHandler.Logger.Debug("GetTemperatureRepository complete");
             return _temperatureRepository;
         }
     }

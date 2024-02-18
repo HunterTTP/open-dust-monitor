@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using LibreHardwareMonitor.Hardware;
+﻿using LibreHardwareMonitor.Hardware;
+using open_dust_monitor.src.Handler;
 
 namespace open_dust_monitor.services
 {
@@ -13,7 +12,7 @@ namespace open_dust_monitor.services
 
         public HardwareService()
         {
-            _thisComputer = FindComputerHardwareList();
+            _thisComputer = FindComputerHardwareInfo();
             _thisCpu = FindCpu(_thisComputer);
             _thisCpuTemperatureSensor = FindCpuPackageTempSensor(_thisCpu);
             _thisCpuLoadSensor = FindCpuPackageLoadSensor(_thisCpu);
@@ -36,7 +35,7 @@ namespace open_dust_monitor.services
             return (float)Math.Round(_thisCpuLoadSensor.Value.GetValueOrDefault(0));
         }
 
-        public string GetCurrentCpuLoadRange(float cpuLoad)
+        public static string GetCurrentCpuLoadRange(float cpuLoad)
         {
             if (cpuLoad <= 10)
             {
@@ -65,7 +64,7 @@ namespace open_dust_monitor.services
             return _thisCpuLoadSensor;
         }
 
-        private static Computer FindComputerHardwareList()
+        private static Computer FindComputerHardwareInfo()
         {
             var computer = new Computer { IsCpuEnabled = true };
             computer.Open();
@@ -74,9 +73,8 @@ namespace open_dust_monitor.services
 
         private static IHardware FindCpu(IComputer computer)
         {
-            var cpu = computer.Hardware.Where(IsCpu).First();
-            if (cpu == null) throw new InvalidOperationException("No CPU found.");
-
+            var cpu = computer.Hardware.Where(IsCpu).First() ?? throw new InvalidOperationException("No CPU found.");
+            LogHandler.Logger.Information("FindCpu name=" + cpu.Name);
             return cpu;
         }
 
@@ -87,12 +85,8 @@ namespace open_dust_monitor.services
 
         private static ISensor FindCpuPackageTempSensor(IHardware cpu)
         {
-            var cpuPackageTempSensor = cpu.Sensors.Where(IsCpuPackageTempSensor).First();
-            if (cpuPackageTempSensor == null)
-            {
-                throw new Exception("No CPU Temperature sensor found.");
-            }
-            Console.WriteLine("cpuPackageTemperatureSensor found with name=" + cpuPackageTempSensor.Name);
+            var cpuPackageTempSensor = cpu.Sensors.Where(IsCpuPackageTempSensor).First() ?? throw new Exception("No CPU Temperature sensor found.");
+            LogHandler.Logger.Information("FindCpuPackageTempSensor name=" + cpuPackageTempSensor.Name);
             return cpuPackageTempSensor;
         }
 
@@ -103,12 +97,8 @@ namespace open_dust_monitor.services
 
         private static ISensor FindCpuPackageLoadSensor(IHardware cpu)
         {
-            var cpuPackageLoadSensor = cpu.Sensors.Where(IsCpuLoadSensor).First();
-            if (cpuPackageLoadSensor == null)
-            {
-                throw new Exception("No CPU Load sensor found.");
-            }
-            Console.WriteLine("cpuPackageLoadSensor found with name=" + cpuPackageLoadSensor.Name);
+            var cpuPackageLoadSensor = cpu.Sensors.Where(IsCpuLoadSensor).First() ?? throw new Exception("No CPU Load sensor found.");
+            LogHandler.Logger.Information("FindCpuPackageLoadSensor name=" + cpuPackageLoadSensor.Name);
             return cpuPackageLoadSensor;
         }
 
@@ -120,6 +110,7 @@ namespace open_dust_monitor.services
         public void StopHardwareMonitoring()
         {
             _thisComputer.Close();
+            LogHandler.Logger.Information("StopHardwareMonitoring complete");
         }
     }
 }

@@ -1,28 +1,35 @@
 ﻿using open_dust_monitor.models;
+using open_dust_monitor.src.Handler;
 
 namespace open_dust_monitor.repositories
 {
     public class TemperatureRepository
     {
         private static readonly string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        private static readonly string _pathToTemperatureHistoryCsv = Path.Combine(baseDirectory, "temperature_history.csv");
-        private List<TemperatureSnapshot> loadedSnapshots = [];
+        private static readonly string pathToBaselineSnapshotsCsv = Path.Combine(baseDirectory, "baseline_temperature_snapshots.csv");
+        private static readonly string pathToRecentSnapshotsCsv = Path.Combine(baseDirectory, "recent_temperature_snapshots.csv");
+        private static List<TemperatureSnapshot> loadedBaselineSnapshots = [];
+        private static List<TemperatureSnapshot> loadedRecentSnapshots = [];
+        private static readonly int retentionDaysForRecentSnapshots = 3;
 
         public TemperatureRepository()
         {
-            EnsureTemperatureHistoryCsvExists();
-            loadedSnapshots = GetAllTemperatureSnapshotsFromCsv();
+            EnsureSnapshotCSVExists(pathToBaselineSnapshotsCsv);
+            EnsureSnapshotCSVExists(pathToRecentSnapshotsCsv);
+            loadedBaselineSnapshots = GetAllTemperatureSnapshotsFromCsv(pathToBaselineSnapshotsCsv);
+            loadedRecentSnapshots = GetAllTemperatureSnapshotsFromCsv(pathToRecentSnapshotsCsv);
         }
 
-        private static void EnsureTemperatureHistoryCsvExists()
+        private static void EnsureSnapshotCSVExists(string pathToCsv)
         {
-            if (!File.Exists(_pathToTemperatureHistoryCsv))
+            if (!File.Exists(pathToCsv))
                 try
                 {
-                    var newTemperatureHistoryCsv = File.Create(_pathToTemperatureHistoryCsv);
-                    var historyCsvWriter = new StreamWriter(newTemperatureHistoryCsv);
+                    var newCsv = File.Create(pathToCsv);
+                    var historyCsvWriter = new StreamWriter(newCsv);
                     historyCsvWriter.WriteLine(TemperatureSnapshot.GetCsvRowHeaders());
                     historyCsvWriter.Close();
+                    LogHandler.Logger.Debug("EnsureSnapshotCSVExists created=" + pathToCsv);
                 }
                 catch (Exception ex)
                 {
@@ -30,56 +37,117 @@ namespace open_dust_monitor.repositories
                 }
         }
 
-        public List<TemperatureSnapshot> GetLoadedIdleSnapshots()
+        public static List<TemperatureSnapshot> GetAllTemperatureSnapshotsFromCsv(string pathToCsv)
         {
-            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "idle").ToList();
+            var retrievedSnapshots = new List<TemperatureSnapshot>();
+            using (var reader = new StreamReader(pathToCsv))
+            {
+                reader.ReadLine(); // Skip header
+                while (true)
+                {
+                    var csvRow = reader.ReadLine();
+                    if (csvRow == null) break;
+                    var csvRowValues = csvRow.Split(',');
+                    var temperatureSnapshot = MapCsvRowToTemperatureSnapshot(csvRowValues);
+                    retrievedSnapshots.Add(temperatureSnapshot);
+                }
+            }
+            LogHandler.Logger.Debug("GetAllTemperatureSnapshotsFromCsv count=" + retrievedSnapshots.Count + " pathToCsv =" + pathToCsv);
+            return retrievedSnapshots;
         }
 
-        public List<TemperatureSnapshot> GetLoadedLowSnapshots()
+
+        public static void SaveAndLoadBaselineSnapshot(TemperatureSnapshot snapshot, int maxSnapshotsForLoadRange)
         {
-            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "low").ToList();
+            var baselineSnapshotCountForLoadRange = GetSnapshotCountForCpuLoadRange(loadedBaselineSnapshots, snapshot.CpuLoadRange);
+            if (baselineSnapshotCountForLoadRange <= maxSnapshotsForLoadRange)
+            {
+                loadedBaselineSnapshots.Add(snapshot);
+                SaveSnapshotToCsv(snapshot, pathToBaselineSnapshotsCsv);
+                LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot saved baselineSnapshot");
+            }
+            else
+            {
+                LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot skipped baselineSnapshot");
+            }
         }
 
-        public List<TemperatureSnapshot> GetLoadedMediumSnapshots()
+        public static void SaveAndLoadRecentSnapshot(TemperatureSnapshot snapshot)
         {
-            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "medium").ToList();
+            loadedRecentSnapshots.Add(snapshot);
+            SaveSnapshotToCsv(snapshot, pathToRecentSnapshotsCsv);
+            RemoveSnapshotsOutsideRetentionPeriod(loadedRecentSnapshots, pathToRecentSnapshotsCsv, retentionDaysForRecentSnapshots);
+            LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot saved baselineSnapshot");
         }
 
-        public List<TemperatureSnapshot> GetLoadedHighSnapshots()
+        private static void SaveSnapshotToCsv(TemperatureSnapshot snapshot, string pathToCsv)
         {
-            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "high").ToList();
-        }
-
-        public List<TemperatureSnapshot> GetLoadedMaxSnapshots()
-        {
-            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "max").ToList();
-        }
-
-        public void SaveTemperatureSnapshot(TemperatureSnapshot snapshot)
-        {
-            loadedSnapshots.Add(snapshot);
-            using (var csvAppender = File.AppendText(_pathToTemperatureHistoryCsv))
+            using (var csvAppender = File.AppendText(pathToCsv))
             {
                 csvAppender.WriteLine(snapshot.GetAsCsvRow());
             }
+            LogHandler.Logger.Debug("SaveSnapshotToCsv saved to csv=" + pathToCsv);
         }
 
-        public List<TemperatureSnapshot> GetAllTemperatureSnapshotsFromCsv()
+        private static void RemoveSnapshotsOutsideRetentionPeriod(List<TemperatureSnapshot> loadedSnapshots, string pathToCsv, int retentionDays)
         {
-            var temperatureSnapshots = new List<TemperatureSnapshot>();
-            using (var reader = new StreamReader(_pathToTemperatureHistoryCsv))
+            var oldestSnapshot = loadedSnapshots[0];
+            var retentionCutOffTimestamp = DateTime.Now - TimeSpan.FromDays(retentionDays);
+            LogHandler.Logger.Debug("RemoveSnapshotsOutsideRetentionPeriod oldestSnapshotTimestamp=" + oldestSnapshot.Timestamp + " retentionCutOffTimestamp=" + retentionCutOffTimestamp);
+            if (oldestSnapshot.Timestamp < retentionCutOffTimestamp)
             {
-                reader.ReadLine(); //skip header
-                string csvRow;
-                while ((csvRow = reader.ReadLine()) != null)
-                {
-                    var csvRowValues = csvRow.Split(',');
-                    var temperatureSnapshot = MapCsvRowToTemperatureSnapshot(csvRowValues);
-                    temperatureSnapshots.Add(temperatureSnapshot);
-                }
+                loadedSnapshots.RemoveAt(0);
+                RemoveOldestSnapshotFromCsv(pathToCsv);
+                LogHandler.Logger.Debug("RemoveSnapshotsOutsideRetentionPeriod removed=" + oldestSnapshot.GetAsCsvRow());
             }
+            else
+            {
+                LogHandler.Logger.Debug("RemoveSnapshotsOutsideRetentionPeriod no outdated snapshots found");
+            }
+        }
 
-            return temperatureSnapshots;
+        private static void RemoveOldestSnapshotFromCsv(string pathToCsv)
+        {
+            var lines = File.ReadAllLines(pathToCsv);
+            var updatedLines = lines.Where((line, index) => index != 1).ToArray();
+            File.WriteAllLines(pathToCsv, updatedLines);
+        }
+
+        public static int GetSnapshotCountForCpuLoadRange(List<TemperatureSnapshot> snapshots, string cpuLoadRange)
+        {
+            var snapshotCountForCpuLoadRange = snapshots.Where(snapshot => snapshot.CpuLoadRange == "cpuLoadRange").ToList().Count;
+            LogHandler.Logger.Debug("GetSnapshotCountForCpuLoadRange value=" + snapshotCountForCpuLoadRange);
+            return snapshotCountForCpuLoadRange;
+        }
+
+        public static List<TemperatureSnapshot> GetLoadedBaselineSnapshots()
+        {
+            return loadedBaselineSnapshots;
+        }
+
+        public static List<TemperatureSnapshot> GetLoadedIdleSnapshots()
+        {
+            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "idle").ToList();
+        }
+
+        public static List<TemperatureSnapshot> GetLoadedLowSnapshots()
+        {
+            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "low").ToList();
+        }
+
+        public static List<TemperatureSnapshot> GetLoadedMediumSnapshots()
+        {
+            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "medium").ToList();
+        }
+
+        public static List<TemperatureSnapshot> GetLoadedHighSnapshots()
+        {
+            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "high").ToList();
+        }
+
+        public static List<TemperatureSnapshot> GetLoadedMaxSnapshots()
+        {
+            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "max").ToList();
         }
 
         private static TemperatureSnapshot MapCsvRowToTemperatureSnapshot(string[] csvRowValues)
@@ -92,14 +160,14 @@ namespace open_dust_monitor.repositories
             return new TemperatureSnapshot(dateTime, cpuName, cpuTemperature, cpuLoad, cpuLoadRange);
         }
 
-        public List<TemperatureSnapshot> GetLoadedTemperatureSnapshots()
+        public static List<TemperatureSnapshot> GetLoadedRecentTemperatureSnapshots()
         {
-            return loadedSnapshots;
+            return loadedRecentSnapshots;
         }
 
-        public int GetLoadedTemperatureSnapshotsCount()
+        public static int GetLoadedRecentTemperatureSnapshotsCount()
         {
-            return loadedSnapshots.Count;
+            return loadedRecentSnapshots.Count;
         }
     }
 }

@@ -1,3 +1,5 @@
+using open_dust_monitor.src.Handler;
+
 namespace open_dust_monitor
 {
     internal static class Program
@@ -8,9 +10,9 @@ namespace open_dust_monitor
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+            LogHandler.ConfigureLogger();
+            LogHandler.Logger.Information("Application launched.");
             Application.Run(new src.forms.MainForm());
         }
     }

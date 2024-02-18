@@ -24,6 +24,7 @@ namespace open_dust_monitor.src.forms
             AddMainLabel();
             AddMainNotifyIcon();
             AddMainTimer();
+            LogHandler.Logger.Information("UI Initialized");
         }
 
         private void ConfigureMainForm()
@@ -33,9 +34,10 @@ namespace open_dust_monitor.src.forms
             this.ClientSize = new Size(450, 975);
             this.BackColor = SystemColors.ButtonHighlight;
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Load += MainForm_Load;
+            this.Load += MainFormLoad;
             this.Resize += new EventHandler(MainForm_Minimize);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
+            LogHandler.Logger.Debug("ConfigureMainForm complete");
         }
 
         private void AddMainLabel()
@@ -45,6 +47,7 @@ namespace open_dust_monitor.src.forms
             MainLabel.Location = new Point(15, 20);
             MainLabel.Text = "Loading..";
             this.Controls.Add(MainLabel);
+            LogHandler.Logger.Debug("AddMainLabel complete");
         }
 
         private void AddMainNotifyIcon()
@@ -53,21 +56,24 @@ namespace open_dust_monitor.src.forms
             MainNotifyIcon.Text = "Loading..";
             MainNotifyIcon.Visible = true;
             MainNotifyIcon.MouseDown += new MouseEventHandler(NotifyIcon_Clicked);
+            LogHandler.Logger.Debug("AddMainNotifyIcon complete");
         }
 
         private void AddMainTimer()
         {
             MainTimer.Enabled = true;
-            MainTimer.Interval = _temperatureService.GetSnapshotIntervalMillis();
-            MainTimer.Tick += new EventHandler(Timer_Tick);
+            MainTimer.Interval = TemperatureService.GetSnapshotIntervalMillis();
+            MainTimer.Tick += new EventHandler(TimerTick);
+            LogHandler.Logger.Debug("AddMainTimer complete");
         }
 
-        private void MainForm_Load(object? sender, EventArgs e)
+        private void MainFormLoad(object? sender, EventArgs e)
         {
             _ = UpdateFormWithCpuInfo();
+            LogHandler.Logger.Debug("MainFormLoad complete");
         }
 
-        private void Timer_Tick(object? sender, EventArgs e)
+        private void TimerTick(object? sender, EventArgs e)
         {
             _ = UpdateFormWithCpuInfo();
         }
@@ -78,11 +84,13 @@ namespace open_dust_monitor.src.forms
             var snapshotLabel = await Task.Run(() => _temperatureService.GetTemperatureSnapshotLabel(latestTemperatureSnapshot, MainTimer.Interval));
             MainLabel.Text = snapshotLabel;
             AlertIfTemperatureIsOutsideThreshold();
+            LogHandler.Logger.Debug("UpdateFormWithCpuInfo complete");
         }
 
         private void AlertIfTemperatureIsOutsideThreshold()
         {
             if (!_temperatureService.AreRecentAverageTemperaturesNormal())
+            {
                 MessageBox.Show(
                     "Your PC is running warmer than usual. Please clean the fans.",
                     "Open Dust Monitor",
@@ -90,6 +98,9 @@ namespace open_dust_monitor.src.forms
                     MessageBoxIcon.Information,
                     MessageBoxDefaultButton.Button1,
                     MessageBoxOptions.DefaultDesktopOnly);
+                LogHandler.Logger.Debug("AlertIfTemperatureIsOutsideThreshold alerted for hot temperature");
+            }
+
         }
 
         private void MainForm_Minimize(object? sender, EventArgs e)

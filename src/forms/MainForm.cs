@@ -78,7 +78,7 @@ namespace open_dust_monitor.src.forms
         {
             BaselineSnapshotsCountLabel.AutoSize = true;
             BaselineSnapshotsCountLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BaselineSnapshotsCountLabel.Location = new Point(20, 450);
+            BaselineSnapshotsCountLabel.Location = new Point(400, 200);
             BaselineSnapshotsCountLabel.Text = "Loading..";
             this.Controls.Add(BaselineSnapshotsCountLabel);
             LogHandler.Logger.Debug("AddBaselineSnapshotsCountLabel complete");
@@ -88,7 +88,7 @@ namespace open_dust_monitor.src.forms
         {
             RecentSnapshotsTemperaturesLabel.AutoSize = true;
             RecentSnapshotsTemperaturesLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            RecentSnapshotsTemperaturesLabel.Location = new Point(400, 200);
+            RecentSnapshotsTemperaturesLabel.Location = new Point(20, 450);
             RecentSnapshotsTemperaturesLabel.Text = "Loading..";
             this.Controls.Add(RecentSnapshotsTemperaturesLabel);
             LogHandler.Logger.Debug("AddRecentSnapshotsTemperaturesLabel complete");

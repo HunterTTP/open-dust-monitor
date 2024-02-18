@@ -7,7 +7,7 @@ namespace open_dust_monitor.services
     public class TemperatureService
     {
         private readonly HardwareService _hardwareService = InstanceHandler.GetHardwareService();
-        private static readonly int snapshotIntervalMillis = 2000;
+        private static readonly int snapshotIntervalMillis = 3000;
         private static readonly int minimumMonitoringMinutes = 120;
         private static readonly int maximumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
 
@@ -19,13 +19,12 @@ namespace open_dust_monitor.services
             var cpuLoad = _hardwareService.GetCurrentCpuLoad();
             var cpuLoadRange = HardwareService.GetCurrentCpuLoadRange(cpuLoad);
             var snapshot = new TemperatureSnapshot(dateTime, cpuName, cpuTemperature, cpuLoad, cpuLoadRange);
-            SaveLatestSnapshot(snapshot);
+            ProcessLatestSnapshot(snapshot);
             return snapshot;
         }
 
-        public static void SaveLatestSnapshot(TemperatureSnapshot snapshot)
+        public static void ProcessLatestSnapshot(TemperatureSnapshot snapshot)
         {
-            LogHandler.Logger.Debug("SaveLatestSnapshot snapshot=" + snapshot);
             TemperatureRepository.SaveAndLoadRecentSnapshot(snapshot);
             TemperatureRepository.SaveAndLoadBaselineSnapshot(snapshot, maximumAlertSnapshots);
         }
@@ -86,12 +85,12 @@ namespace open_dust_monitor.services
             var maxSnapshots = TemperatureRepository.GetSnapshotsForLoadRange(snapshots, "max");
             return
                 snapshotCategory + " Snapshot Counts:"
-                + "\n idleSnapshotCount: " + idleSnapshots.Count
-                + "\n lowSnapshotCount: " + lowSnapshots.Count
-                + "\n mediumSnapshotCount: " + mediumSnapshots.Count
-                + "\n highSnapshotCount: " + highSnapshots.Count
-                + "\n maxSnapshotCount: " + maxSnapshots.Count
-                + "\n totalSnapshotCount: " + snapshots.Count;
+                + "\n idle: " + idleSnapshots.Count
+                + "\n low: " + lowSnapshots.Count
+                + "\n medium: " + mediumSnapshots.Count
+                + "\n high: " + highSnapshots.Count
+                + "\n max: " + maxSnapshots.Count
+                + "\n total: " + snapshots.Count;
         }
 
         public static string GetSnapshotTemperaturesLabel(List<TemperatureSnapshot> snapshots, string snapshotCategory)
@@ -103,11 +102,11 @@ namespace open_dust_monitor.services
             var maxSnapshots = TemperatureRepository.GetSnapshotsForLoadRange(snapshots, "max");
             return
                 snapshotCategory + " Average Temperatures:"
-                + "\n idleRecentAverage: " + GetAverageTemperature(idleSnapshots) + "°C"
-                + "\n lowRecentAverage: " + GetAverageTemperature(lowSnapshots) + "°C"
-                + "\n mediumRecentAverage: " + GetAverageTemperature(mediumSnapshots) + "°C"
-                + "\n highRecentAverage: " + GetAverageTemperature(highSnapshots) + "°C"
-                + "\n maxRecentAverage: " + GetAverageTemperature(maxSnapshots) + "°C";
+                + "\n idle: " + GetAverageTemperature(idleSnapshots) + "°C"
+                + "\n low: " + GetAverageTemperature(lowSnapshots) + "°C"
+                + "\n medium: " + GetAverageTemperature(mediumSnapshots) + "°C"
+                + "\n high: " + GetAverageTemperature(highSnapshots) + "°C"
+                + "\n max: " + GetAverageTemperature(maxSnapshots) + "°C";
         }
 
         public static string GetSnapshotAlertThresholdsLabel(List<TemperatureSnapshot> snapshots)
@@ -119,11 +118,11 @@ namespace open_dust_monitor.services
             var maxSnapshots = TemperatureRepository.GetSnapshotsForLoadRange(snapshots, "max");
             return
                 "Alert Threshold Temperatures:"
-                + "\n idleRecentAverage: " + GetAlertThresholdTemperature(idleSnapshots) + "°C"
-                + "\n lowRecentAverage: " + GetAlertThresholdTemperature(lowSnapshots) + "°C"
-                + "\n mediumRecentAverage: " + GetAlertThresholdTemperature(mediumSnapshots) + "°C"
-                + "\n highRecentAverage: " + GetAlertThresholdTemperature(highSnapshots) + "°C"
-                + "\n maxRecentAverage: " + GetAlertThresholdTemperature(maxSnapshots) + "°C";
+                + "\n idle: " + GetAlertThresholdTemperature(idleSnapshots) + "°C"
+                + "\n low: " + GetAlertThresholdTemperature(lowSnapshots) + "°C"
+                + "\n medium: " + GetAlertThresholdTemperature(mediumSnapshots) + "°C"
+                + "\n high: " + GetAlertThresholdTemperature(highSnapshots) + "°C"
+                + "\n max: " + GetAlertThresholdTemperature(maxSnapshots) + "°C";
         }
 
         public void StopTemperatureMonitoring()
@@ -134,6 +133,11 @@ namespace open_dust_monitor.services
         public static int GetSnapshotIntervalMillis()
         {
             return snapshotIntervalMillis;
+        }
+
+        public static int GetMaximumAlertSnapshotsCount()
+        {
+            return maximumAlertSnapshots;
         }
     }
 }

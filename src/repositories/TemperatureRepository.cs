@@ -74,11 +74,11 @@ namespace open_dust_monitor.repositories
             {
                 loadedBaselineSnapshots.Add(snapshot);
                 SaveSnapshotToCsv(snapshot, pathToBaselineSnapshotsCsv);
-                LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot saved baselineSnapshot");
+                LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot saved baselineSnapshot loadRange=" + snapshot.CpuLoadRange);
             }
             else
             {
-                LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot skipped baselineSnapshot");
+                LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot skipped baselineSnapshot loadRange=" + snapshot.CpuLoadRange);
             }
         }
 
@@ -87,7 +87,7 @@ namespace open_dust_monitor.repositories
             loadedRecentSnapshots.Add(snapshot);
             SaveSnapshotToCsv(snapshot, pathToRecentSnapshotsCsv);
             RemoveSnapshotsOutsideRetentionPeriod(loadedRecentSnapshots, pathToRecentSnapshotsCsv, retentionDaysForRecentSnapshots);
-            LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot saved baselineSnapshot");
+            LogHandler.Logger.Debug("SaveAndLoadBaselineSnapshot saved recentSnapshot loadRange=" + snapshot.CpuLoadRange);
         }
 
         private static void SaveSnapshotToCsv(TemperatureSnapshot snapshot, string pathToCsv)
@@ -125,7 +125,7 @@ namespace open_dust_monitor.repositories
 
         public static int GetSnapshotCountForCpuLoadRange(List<TemperatureSnapshot> snapshots, string cpuLoadRange)
         {
-            var snapshotCountForCpuLoadRange = snapshots.Where(snapshot => snapshot.CpuLoadRange == "cpuLoadRange").ToList().Count;
+            var snapshotCountForCpuLoadRange = snapshots.Where(snapshot => snapshot.CpuLoadRange == cpuLoadRange).ToList().Count;
             LogHandler.Logger.Debug("GetSnapshotCountForCpuLoadRange value=" + snapshotCountForCpuLoadRange);
             return snapshotCountForCpuLoadRange;
         }

@@ -3,11 +3,18 @@ using open_dust_monitor.services;
 
 namespace open_dust_monitor.src.Handler
 {
-    public static class InstanceHandler
+    public class InstanceHandler
     {
         private static HardwareService? _hardwareService;
         private static TemperatureService? _temperatureService;
         private static TemperatureRepository? _temperatureRepository;
+
+        public static void CreateAllInstances()
+        {
+            _hardwareService = GetHardwareService();
+            _temperatureService = GetTemperatureService();
+            _temperatureRepository = GetTemperatureRepository();
+        }
 
         public static HardwareService GetHardwareService()
         {

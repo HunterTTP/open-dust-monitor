@@ -5,7 +5,7 @@ namespace open_dust_monitor.src.forms
 {
     public partial class MainForm : Form
     {
-        private readonly TemperatureService _temperatureService;
+        private readonly TemperatureService _temperatureService = InstanceHandler.GetTemperatureService();
         private readonly Label MainLabel = new();
         private readonly System.Windows.Forms.Timer MainTimer = new();
         private readonly NotifyIcon MainNotifyIcon = new();
@@ -13,9 +13,14 @@ namespace open_dust_monitor.src.forms
 
         public MainForm()
         {
-            _temperatureService = InstanceHandler.GetTemperatureService();
             InitializeComponent();
+            InitializeClassInstances();
             InitializeUi();
+        }
+
+        private static void InitializeClassInstances()
+        {
+            InstanceHandler.CreateAllInstances();
         }
 
         private void InitializeUi()

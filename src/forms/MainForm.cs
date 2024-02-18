@@ -30,8 +30,9 @@ namespace open_dust_monitor.src.forms
         {
             this.Icon = new Icon(iconPath);
             this.Text = "Open Dust Monitor";
-            this.ClientSize = new Size(450, 700);
+            this.ClientSize = new Size(450, 975);
             this.BackColor = SystemColors.ButtonHighlight;
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Load += MainForm_Load;
             this.Resize += new EventHandler(MainForm_Minimize);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
@@ -41,14 +42,13 @@ namespace open_dust_monitor.src.forms
         {
             MainLabel.AutoSize = true;
             MainLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            MainLabel.Location = new Point(14, 14);
+            MainLabel.Location = new Point(15, 20);
             MainLabel.Text = "Loading..";
             this.Controls.Add(MainLabel);
         }
 
         private void AddMainNotifyIcon()
         {
-
             MainNotifyIcon.Icon = new Icon(iconPath);
             MainNotifyIcon.Text = "Loading..";
             MainNotifyIcon.Visible = true;
@@ -58,7 +58,7 @@ namespace open_dust_monitor.src.forms
         private void AddMainTimer()
         {
             MainTimer.Enabled = true;
-            MainTimer.Interval = 2000;
+            MainTimer.Interval = _temperatureService.GetSnapshotIntervalMillis();
             MainTimer.Tick += new EventHandler(Timer_Tick);
         }
 

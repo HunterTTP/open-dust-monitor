@@ -8,6 +8,9 @@ namespace open_dust_monitor.services
     {
         private readonly HardwareService _hardwareService = InstanceHandler.GetHardwareService();
         private readonly TemperatureRepository _temperatureRepository = InstanceHandler.GetTemperatureRepository();
+        private static readonly int snapshotIntervalMillis = 2000;
+        private static readonly int minimumMonitoringMinutes = 120;
+        private static readonly int minimumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
@@ -33,10 +36,7 @@ namespace open_dust_monitor.services
 
         public bool IsRecentAverageTemperatureNormal(List<TemperatureSnapshot> snapshots)
         {
-            var minimumMonitoringHours = 2;
-            var snapshotIntervalSeconds = 2;
-            var minimumSnapshots = (minimumMonitoringHours * 60 * 60) / snapshotIntervalSeconds;
-            if (snapshots.Count < minimumSnapshots) { return true; }
+            if (snapshots.Count < minimumAlertSnapshots) { return true; }
             return (GetRecentAverageTemperature(snapshots) <= GetAlertThresholdTemperature(snapshots));
         }
 
@@ -110,6 +110,11 @@ namespace open_dust_monitor.services
         public void StopTemperatureMonitoring()
         {
             _hardwareService.StopHardwareMonitoring();
+        }
+
+        public int GetSnapshotIntervalMillis()
+        {
+            return snapshotIntervalMillis;
         }
     }
 }

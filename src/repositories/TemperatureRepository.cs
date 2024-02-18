@@ -6,16 +6,12 @@ namespace open_dust_monitor.repositories
     {
         private static readonly string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
         private static readonly string _pathToTemperatureHistoryCsv = Path.Combine(baseDirectory, "temperature_history.csv");
-        private List<TemperatureSnapshot> loadedIdleSnapshots = [];
-        private List<TemperatureSnapshot> loadedLowSnapshots = [];
-        private List<TemperatureSnapshot> loadedMediumSnapshots = [];
-        private List<TemperatureSnapshot> loadedHighSnapshots = [];
-        private List<TemperatureSnapshot> loadedMaxSnapshots = [];
+        private List<TemperatureSnapshot> loadedSnapshots = [];
 
         public TemperatureRepository()
         {
             EnsureTemperatureHistoryCsvExists();
-            LoadTemperatureSnapshots(GetAllTemperatureSnapshotsFromCsv());
+            loadedSnapshots = GetAllTemperatureSnapshotsFromCsv();
         }
 
         private static void EnsureTemperatureHistoryCsvExists()
@@ -34,67 +30,34 @@ namespace open_dust_monitor.repositories
                 }
         }
 
-        public void LoadTemperatureSnapshots(List<TemperatureSnapshot> snapshots)
-        {
-            loadedIdleSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "idle").ToList();
-            loadedLowSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "low").ToList();
-            loadedMediumSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "medium").ToList();
-            loadedHighSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "high").ToList();
-            loadedMaxSnapshots = snapshots.Where(snapshot => snapshot.CpuLoadRange == "max").ToList();
-        }
-
-        public void LoadTemperatureSnapshot(TemperatureSnapshot snapshot)
-        {
-            if (snapshot.CpuLoadRange.Equals("idle"))
-            {
-                loadedIdleSnapshots.Add(snapshot);
-            }
-            else if (snapshot.CpuLoadRange.Equals("low"))
-            {
-                loadedLowSnapshots.Add(snapshot);
-            }
-            else if (snapshot.CpuLoadRange.Equals("medium"))
-            {
-                loadedMediumSnapshots.Add(snapshot);
-            }
-            else if (snapshot.CpuLoadRange.Equals("high"))
-            {
-                loadedHighSnapshots.Add(snapshot);
-            }
-            else if (snapshot.CpuLoadRange.Equals("max"))
-            {
-                loadedMaxSnapshots.Add(snapshot);
-            }
-        }
-
         public List<TemperatureSnapshot> GetLoadedIdleSnapshots()
         {
-            return loadedIdleSnapshots;
+            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "idle").ToList();
         }
 
         public List<TemperatureSnapshot> GetLoadedLowSnapshots()
         {
-            return loadedLowSnapshots;
+            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "low").ToList();
         }
 
         public List<TemperatureSnapshot> GetLoadedMediumSnapshots()
         {
-            return loadedMediumSnapshots;
+            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "medium").ToList();
         }
 
         public List<TemperatureSnapshot> GetLoadedHighSnapshots()
         {
-            return loadedHighSnapshots;
+            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "high").ToList();
         }
 
         public List<TemperatureSnapshot> GetLoadedMaxSnapshots()
         {
-            return loadedMaxSnapshots;
+            return loadedSnapshots.Where(snapshot => snapshot.CpuLoadRange == "max").ToList();
         }
 
         public void SaveTemperatureSnapshot(TemperatureSnapshot snapshot)
         {
-            LoadTemperatureSnapshot(snapshot);
+            loadedSnapshots.Add(snapshot);
             using (var csvAppender = File.AppendText(_pathToTemperatureHistoryCsv))
             {
                 csvAppender.WriteLine(snapshot.GetAsCsvRow());
@@ -131,21 +94,12 @@ namespace open_dust_monitor.repositories
 
         public List<TemperatureSnapshot> GetLoadedTemperatureSnapshots()
         {
-            return loadedIdleSnapshots
-                .Concat(loadedLowSnapshots)
-                .Concat(loadedMediumSnapshots)
-                .Concat(loadedHighSnapshots)
-                .Concat(loadedMaxSnapshots)
-                .ToList();
+            return loadedSnapshots;
         }
 
         public int GetLoadedTemperatureSnapshotsCount()
         {
-            return loadedIdleSnapshots.Count
-                + loadedLowSnapshots.Count
-                + loadedMediumSnapshots.Count
-                + loadedHighSnapshots.Count
-                + loadedMaxSnapshots.Count;
+            return loadedSnapshots.Count;
         }
     }
 }

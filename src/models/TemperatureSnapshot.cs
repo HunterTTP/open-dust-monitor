@@ -22,5 +22,13 @@
         {
             return Timestamp + "," + CpuName + "," + CpuTemperature + "," + CpuLoad + "," + CpuLoadRange;
         }
+
+        public override string ToString()
+        {
+            return "Timestamp: " + Timestamp
+                + "\n CPU: " + CpuName
+                + "\n Temperature: " + CpuTemperature + "°C"
+                + "\n Utilization: " + CpuLoad + "%";
+        }
     }
 }

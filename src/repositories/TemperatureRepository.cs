@@ -135,29 +135,14 @@ namespace open_dust_monitor.repositories
             return loadedBaselineSnapshots;
         }
 
-        public static List<TemperatureSnapshot> GetLoadedIdleSnapshots()
+        public static List<TemperatureSnapshot> GetLoadedRecentSnapshots()
         {
-            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "idle").ToList();
+            return loadedRecentSnapshots;
         }
 
-        public static List<TemperatureSnapshot> GetLoadedLowSnapshots()
+        public static List<TemperatureSnapshot> GetSnapshotsForLoadRange(List<TemperatureSnapshot> snapshots, string cpuLoadRange)
         {
-            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "low").ToList();
-        }
-
-        public static List<TemperatureSnapshot> GetLoadedMediumSnapshots()
-        {
-            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "medium").ToList();
-        }
-
-        public static List<TemperatureSnapshot> GetLoadedHighSnapshots()
-        {
-            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "high").ToList();
-        }
-
-        public static List<TemperatureSnapshot> GetLoadedMaxSnapshots()
-        {
-            return loadedRecentSnapshots.Where(snapshot => snapshot.CpuLoadRange == "max").ToList();
+            return snapshots.Where(snapshot => snapshot.CpuLoadRange == cpuLoadRange).ToList();
         }
 
         private static TemperatureSnapshot MapCsvRowToTemperatureSnapshot(string[] csvRowValues)

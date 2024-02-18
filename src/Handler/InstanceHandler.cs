@@ -14,6 +14,7 @@ namespace open_dust_monitor.src.Handler
             _hardwareService = GetHardwareService();
             _temperatureService = GetTemperatureService();
             _temperatureRepository = GetTemperatureRepository();
+            LogHandler.Logger.Information("CreateAllInstances complete");
         }
 
         public static HardwareService GetHardwareService()

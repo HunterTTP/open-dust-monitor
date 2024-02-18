@@ -6,9 +6,10 @@ namespace open_dust_monitor.src.forms
     public partial class MainForm : Form
     {
         private readonly TemperatureService _temperatureService;
-        private Label MainLabel;
-        private System.Windows.Forms.Timer MainTimer;
-        private NotifyIcon MainNotifyIcon;
+        private readonly Label MainLabel = new();
+        private readonly System.Windows.Forms.Timer MainTimer = new();
+        private readonly NotifyIcon MainNotifyIcon = new();
+        private readonly string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
 
         public MainForm()
         {
@@ -27,7 +28,6 @@ namespace open_dust_monitor.src.forms
 
         private void ConfigureMainForm()
         {
-            string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
             this.Icon = new Icon(iconPath);
             this.Text = "Open Dust Monitor";
             this.ClientSize = new Size(450, 700);
@@ -39,21 +39,16 @@ namespace open_dust_monitor.src.forms
 
         private void AddMainLabel()
         {
-            MainLabel = new Label();
             MainLabel.AutoSize = true;
             MainLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             MainLabel.Location = new Point(14, 14);
-            MainLabel.Name = "label1";
-            MainLabel.Size = new Size(72, 21);
-            MainLabel.TabIndex = 0;
             MainLabel.Text = "Loading..";
             this.Controls.Add(MainLabel);
         }
 
         private void AddMainNotifyIcon()
         {
-            string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
-            MainNotifyIcon = new NotifyIcon();
+
             MainNotifyIcon.Icon = new Icon(iconPath);
             MainNotifyIcon.Text = "Loading..";
             MainNotifyIcon.Visible = true;
@@ -62,7 +57,6 @@ namespace open_dust_monitor.src.forms
 
         private void AddMainTimer()
         {
-            MainTimer = new System.Windows.Forms.Timer();
             MainTimer.Enabled = true;
             MainTimer.Interval = 2000;
             MainTimer.Tick += new EventHandler(Timer_Tick);

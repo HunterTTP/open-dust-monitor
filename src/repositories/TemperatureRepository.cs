@@ -4,7 +4,8 @@ namespace open_dust_monitor.repositories
 {
     public class TemperatureRepository
     {
-        private readonly string _pathToTemperatureHistoryCsv;
+        private static readonly string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        private static readonly string _pathToTemperatureHistoryCsv = Path.Combine(baseDirectory, "temperature_history.csv");
         private List<TemperatureSnapshot> _loadedIdleSnapshots = [];
         private List<TemperatureSnapshot> _loadedLowSnapshots = [];
         private List<TemperatureSnapshot> _loadedMediumSnapshots = [];
@@ -13,10 +14,24 @@ namespace open_dust_monitor.repositories
 
         public TemperatureRepository()
         {
-            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            _pathToTemperatureHistoryCsv = Path.Combine(baseDirectory, "temperature_history.csv");
             EnsureTemperatureHistoryCsvExists();
             LoadTemperatureSnapshots(GetAllTemperatureSnapshotsFromCsv());
+        }
+
+        private static void EnsureTemperatureHistoryCsvExists()
+        {
+            if (!File.Exists(_pathToTemperatureHistoryCsv))
+                try
+                {
+                    var newTemperatureHistoryCsv = File.Create(_pathToTemperatureHistoryCsv);
+                    var historyCsvWriter = new StreamWriter(newTemperatureHistoryCsv);
+                    historyCsvWriter.WriteLine(TemperatureSnapshot.GetCsvRowHeaders());
+                    historyCsvWriter.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException("Could not create TemperatureHistoryCsv: " + ex);
+                }
         }
 
         public void LoadTemperatureSnapshots(List<TemperatureSnapshot> snapshots)
@@ -75,22 +90,6 @@ namespace open_dust_monitor.repositories
         public List<TemperatureSnapshot> GetLoadedMaxSnapshots()
         {
             return _loadedMaxSnapshots;
-        }
-
-        private void EnsureTemperatureHistoryCsvExists()
-        {
-            if (!File.Exists(_pathToTemperatureHistoryCsv))
-                try
-                {
-                    var newTemperatureHistoryCsv = File.Create(_pathToTemperatureHistoryCsv);
-                    var historyCsvWriter = new StreamWriter(newTemperatureHistoryCsv);
-                    historyCsvWriter.WriteLine(TemperatureSnapshot.GetCsvRowHeaders());
-                    historyCsvWriter.Close();
-                }
-                catch (Exception ex)
-                {
-                    throw new FileLoadException("Could not create TemperatureHistoryCsv: " + ex);
-                }
         }
 
         public void SaveTemperatureSnapshot(TemperatureSnapshot snapshot)

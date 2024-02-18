@@ -28,52 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            label1 = new Label();
-            notifyIcon1 = new NotifyIcon(components);
-            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(14, 11);
-            label1.Name = "label1";
-            label1.Size = new Size(72, 21);
-            label1.TabIndex = 0;
-            label1.Text = "Loading..";
-            // 
-            // notifyIcon1
-            // 
-            notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
-            notifyIcon1.Text = "notifyIcon1";
-            notifyIcon1.Visible = true;
-            // 
-            // timer1
-            // 
-            timer1.Enabled = true;
-            timer1.Interval = 2000;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ButtonHighlight;
-            ClientSize = new Size(319, 733);
-            Controls.Add(label1);
+            ClientSize = new Size(319, 621);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Open Dust Monitor";
             Load += MainForm_Load;
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-        private Label label1;
-        private NotifyIcon notifyIcon1;
-        private System.Windows.Forms.Timer timer1;
     }
 }

@@ -23,14 +23,21 @@ namespace open_dust_monitor.services
 
         public bool AreRecentAverageTemperaturesNormal()
         {
-            return IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedIdleSnapshots())
+            return
+                IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedIdleSnapshots())
                 && IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedLowSnapshots())
-                && IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedMediumSnapshots());
+                && IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedMediumSnapshots())
+                && IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedHighSnapshots())
+                && IsRecentAverageTemperatureNormal(_temperatureRepository.GetLoadedMaxSnapshots());
         }
 
         public bool IsRecentAverageTemperatureNormal(List<TemperatureSnapshot> snapshots)
         {
-            return GetRecentAverageTemperature(snapshots) <= GetAlertThresholdTemperature(snapshots);
+            var minimumMonitoringHours = 2;
+            var snapshotIntervalSeconds = 2;
+            var minimumSnapshots = (minimumMonitoringHours * 60 * 60) / snapshotIntervalSeconds;
+            if (snapshots.Count < minimumSnapshots) { return true; }
+            return (GetRecentAverageTemperature(snapshots) <= GetAlertThresholdTemperature(snapshots));
         }
 
         public static float GetRecentAverageTemperature(List<TemperatureSnapshot> snapshots)

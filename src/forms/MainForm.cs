@@ -1,6 +1,5 @@
 ﻿using open_dust_monitor.services;
 using open_dust_monitor.src.Handler;
-using System.Resources;
 
 namespace open_dust_monitor.src.forms
 {
@@ -15,34 +14,30 @@ namespace open_dust_monitor.src.forms
         {
             _temperatureService = InstanceHandler.GetTemperatureService();
             InitializeComponent();
-            InitializeEventHandlers();
             InitializeUi();
-        }
-
-        private void InitializeEventHandlers()
-        {
-            CreateMainTimer();
-            this.Resize += new EventHandler(MainForm_Minimize);
-            this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
-        }
-
-        private void CreateMainTimer()
-        {
-            MainTimer = new System.Windows.Forms.Timer();
-            MainTimer.Enabled = true;
-            MainTimer.Interval = 2000;
-            MainTimer.Tick += new EventHandler(Timer_Tick);
         }
 
         private void InitializeUi()
         {
-            string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
-            this.Icon = new Icon(iconPath);
-            CreateMainLabel();
-            CreateMainNotifyIcon();
+            ConfigureMainForm();
+            AddMainLabel();
+            AddMainNotifyIcon();
+            AddMainTimer();
         }
 
-        private void CreateMainLabel()
+        private void ConfigureMainForm()
+        {
+            string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
+            this.Icon = new Icon(iconPath);
+            this.Text = "Open Dust Monitor";
+            this.ClientSize = new Size(450, 700);
+            this.BackColor = SystemColors.ButtonHighlight;
+            this.Load += MainForm_Load;
+            this.Resize += new EventHandler(MainForm_Minimize);
+            this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
+        }
+
+        private void AddMainLabel()
         {
             MainLabel = new Label();
             MainLabel.AutoSize = true;
@@ -55,7 +50,7 @@ namespace open_dust_monitor.src.forms
             this.Controls.Add(MainLabel);
         }
 
-        private void CreateMainNotifyIcon()
+        private void AddMainNotifyIcon()
         {
             string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
             MainNotifyIcon = new NotifyIcon();
@@ -63,6 +58,14 @@ namespace open_dust_monitor.src.forms
             MainNotifyIcon.Text = "Loading..";
             MainNotifyIcon.Visible = true;
             MainNotifyIcon.MouseDown += new MouseEventHandler(NotifyIcon_Clicked);
+        }
+
+        private void AddMainTimer()
+        {
+            MainTimer = new System.Windows.Forms.Timer();
+            MainTimer.Enabled = true;
+            MainTimer.Interval = 2000;
+            MainTimer.Tick += new EventHandler(Timer_Tick);
         }
 
         private void MainForm_Load(object? sender, EventArgs e)

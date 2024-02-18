@@ -35,12 +35,8 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ButtonHighlight;
-            ClientSize = new Size(319, 621);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
-            Text = "Open Dust Monitor";
-            Load += MainForm_Load;
             ResumeLayout(false);
         }
 

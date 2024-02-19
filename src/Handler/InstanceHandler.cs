@@ -8,6 +8,7 @@ namespace open_dust_monitor.src.Handler
         private static HardwareService? _hardwareService;
         private static TemperatureService? _temperatureService;
         private static TemperatureRepository? _temperatureRepository;
+        private static SettingsHandler? _settingsHandler;
 
         public static void CreateAllInstances()
         {
@@ -36,6 +37,13 @@ namespace open_dust_monitor.src.Handler
             _temperatureRepository ??= new TemperatureRepository();
             LogHandler.Logger.Debug("GetTemperatureRepository complete");
             return _temperatureRepository;
+        }
+
+        public static SettingsHandler GetSettingsHandler()
+        {
+            _settingsHandler ??= new SettingsHandler();
+            LogHandler.Logger.Debug("GetSettingsHandler complete");
+            return _settingsHandler;
         }
     }
 }

@@ -7,11 +7,11 @@ namespace open_dust_monitor.services
     public class TemperatureService
     {
         private readonly HardwareService _hardwareService = InstanceHandler.GetHardwareService();
+        private readonly SettingsHandler _settingsHandler = InstanceHandler.GetSettingsHandler();
         private static readonly int snapshotIntervalMillis = 2000;
         private static readonly int minimumMonitoringMinutes = 120;
         private static readonly int maximumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
         private static readonly int userNotificationFrequencyHours = 72;
-        private static DateTime userLastNotified;
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
@@ -147,14 +147,15 @@ namespace open_dust_monitor.services
             return maximumAlertSnapshots;
         }
 
-        public static bool WasUserRecentlyNotified()
+        public bool WasUserRecentlyNotified()
         {
-            return userLastNotified >= (DateTime.Now - TimeSpan.FromHours(userNotificationFrequencyHours));
+            return _settingsHandler.UserLastNotified >= (DateTime.Now - TimeSpan.FromHours(userNotificationFrequencyHours));
         }
 
-        public static void UserWasNotified()
+        public void UserWasNotified(DateTime dateTime)
         {
-            userLastNotified = DateTime.Now;
+            _settingsHandler.UserLastNotified = dateTime;
+            _settingsHandler.SaveSettings();
         }
 
         public static void ResetBaselineTemperatures()

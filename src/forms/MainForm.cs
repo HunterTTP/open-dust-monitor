@@ -139,11 +139,11 @@ namespace open_dust_monitor.src.forms
             LogHandler.Logger.Debug("UpdateFormWithCpuInfo complete");
         }
 
-        private static void AlertIfTemperatureIsOutsideThreshold()
+        private void AlertIfTemperatureIsOutsideThreshold()
         {
             var areTemperaturesWithinThreshold = TemperatureService.AreRecentAverageTemperaturesWithinThreshold();
-            var wasUserRecentlyNotified = TemperatureService.WasUserRecentlyNotified();
-            if (!areTemperaturesWithinThreshold && !wasUserRecentlyNotified)
+            var wasUserRecentlyNotified = _temperatureService.WasUserRecentlyNotified();
+            if (areTemperaturesWithinThreshold && !wasUserRecentlyNotified)
             {
                 var temperatureNotification = MessageBox.Show(
                     "Your PC has been running hotter than usual for the past few days." +
@@ -155,7 +155,7 @@ namespace open_dust_monitor.src.forms
                     MessageBoxIcon.Information,
                     MessageBoxDefaultButton.Button1,
                     MessageBoxOptions.DefaultDesktopOnly);
-                TemperatureService.UserWasNotified();
+                _temperatureService.UserWasNotified(DateTime.Now);
                 LogHandler.Logger.Warning("AlertIfTemperatureIsOutsideThreshold alerted for hot temperature");
 
                 if (temperatureNotification == DialogResult.No)

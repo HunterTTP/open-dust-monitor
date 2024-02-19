@@ -12,6 +12,7 @@ namespace open_dust_monitor
         {
             ApplicationConfiguration.Initialize();
             LogHandler.ConfigureLogger();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.Run(new src.forms.MainForm());
         }
     }

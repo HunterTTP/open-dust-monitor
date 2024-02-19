@@ -141,18 +141,28 @@ namespace open_dust_monitor.src.forms
 
         private static void AlertIfTemperatureIsOutsideThreshold()
         {
-            if (!TemperatureService.AreRecentAverageTemperaturesWithinThreshold())
+            var areTemperaturesWithinThreshold = TemperatureService.AreRecentAverageTemperaturesWithinThreshold();
+            var wasUserRecentlyNotified = TemperatureService.WasUserRecentlyNotified();
+            if (!areTemperaturesWithinThreshold && !wasUserRecentlyNotified)
             {
-                MessageBox.Show(
-                    "Your PC is running warmer than usual. Please clean the fans.",
-                    "Open Dust Monitor",
-                    MessageBoxButtons.OK,
+                var temperatureNotification = MessageBox.Show(
+                    "Your PC has been running hotter than usual for the past few days." +
+                    " This is likely due to dust build up, please clean the fans and heatsinks with compressed air." +
+                    "\n\nYou will not see this alert again as long as the temperatures return to normal within the next few days." +
+                    "\n\nPlease select 'Yes' if this analysis was correct or 'No' if the PC is already clean and running normally.",
+                    "Open Dust Monitor - PC Temperature Alert",
+                    MessageBoxButtons.YesNo,
                     MessageBoxIcon.Information,
                     MessageBoxDefaultButton.Button1,
                     MessageBoxOptions.DefaultDesktopOnly);
+                TemperatureService.UserWasNotified();
                 LogHandler.Logger.Warning("AlertIfTemperatureIsOutsideThreshold alerted for hot temperature");
-            }
 
+                if (temperatureNotification == DialogResult.No)
+                {
+                    TemperatureService.ResetBaselineTemperatures();
+                }
+            }
         }
 
         private void MainForm_Minimize(object? sender, EventArgs e)

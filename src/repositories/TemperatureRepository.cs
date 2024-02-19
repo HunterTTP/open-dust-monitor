@@ -22,7 +22,7 @@ namespace open_dust_monitor.repositories
             loadedRecentSnapshots = GetAllTemperatureSnapshotsFromCsv(pathToRecentSnapshotsCsv);
         }
 
-        private void EnsureCsvDirectoryExists(string csvDirectory)
+        private static void EnsureCsvDirectoryExists(string csvDirectory)
         {
             if (!Directory.Exists(csvDirectory))
             {
@@ -163,6 +163,19 @@ namespace open_dust_monitor.repositories
         public static int GetLoadedRecentTemperatureSnapshotsCount()
         {
             return loadedRecentSnapshots.Count;
+        }
+
+        public static void RemovalAllBaselineTemperatureSnapshots()
+        {
+            loadedBaselineSnapshots = [];
+            RemoveAllTemperatureSnapshotsFromCsv(pathToBaselineSnapshotsCsv);
+        }
+
+        public static void RemoveAllTemperatureSnapshotsFromCsv(string pathToCsv)
+        {
+            var lines = File.ReadAllLines(pathToCsv);
+            var updatedLines = lines.Take(1).ToArray();
+            File.WriteAllLines(pathToCsv, updatedLines);
         }
     }
 }

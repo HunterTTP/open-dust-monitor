@@ -10,6 +10,8 @@ namespace open_dust_monitor.services
         private static readonly int snapshotIntervalMillis = 2000;
         private static readonly int minimumMonitoringMinutes = 120;
         private static readonly int maximumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
+        private static readonly int userNotificationFrequencyHours = 72;
+        private static DateTime userLastNotified;
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
@@ -143,6 +145,22 @@ namespace open_dust_monitor.services
         public static int GetMaximumAlertSnapshotsCount()
         {
             return maximumAlertSnapshots;
+        }
+
+        public static bool WasUserRecentlyNotified()
+        {
+            return userLastNotified >= (DateTime.Now - TimeSpan.FromHours(userNotificationFrequencyHours));
+        }
+
+        public static void UserWasNotified()
+        {
+            userLastNotified = DateTime.Now;
+        }
+
+        public static void ResetBaselineTemperatures()
+        {
+            TemperatureRepository.RemovalAllBaselineTemperatureSnapshots();
+
         }
     }
 }

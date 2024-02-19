@@ -23,7 +23,7 @@
             return Timestamp + "," + CpuName + "," + CpuTemperature + "," + CpuLoad + "," + CpuLoadRange;
         }
 
-        public override string ToString()
+        public string GetAsFormattedString()
         {
             return "Timestamp: " + Timestamp
                 + "\n CPU: " + CpuName

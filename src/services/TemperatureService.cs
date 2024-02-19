@@ -7,7 +7,7 @@ namespace open_dust_monitor.services
     public class TemperatureService
     {
         private readonly HardwareService _hardwareService = InstanceHandler.GetHardwareService();
-        private static readonly int snapshotIntervalMillis = 3000;
+        private static readonly int snapshotIntervalMillis = 2000;
         private static readonly int minimumMonitoringMinutes = 120;
         private static readonly int maximumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
 
@@ -74,6 +74,11 @@ namespace open_dust_monitor.services
         public static float GetAlertThresholdTemperature(List<TemperatureSnapshot> snapshots)
         {
             return (float)Math.Round(GetAverageTemperature(snapshots) + 5f);
+        }
+
+        public static string GetLatestSnapshotLabel(TemperatureSnapshot snapshot)
+        {
+            return "Latest Snapshot: \n " + snapshot.GetAsFormattedString();
         }
 
         public static string GetSnapshotCountsLabel(List<TemperatureSnapshot> snapshots, string snapshotCategory)

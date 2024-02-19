@@ -52,7 +52,7 @@ namespace open_dust_monitor.repositories
             var retrievedSnapshots = new List<TemperatureSnapshot>();
             using (var reader = new StreamReader(pathToCsv))
             {
-                reader.ReadLine(); // Skip header
+                reader.ReadLine();
                 while (true)
                 {
                     var csvRow = reader.ReadLine();

@@ -59,6 +59,7 @@ namespace open_dust_monitor.src.forms
                 RowCount = 5,
                 Dock = DockStyle.Fill,
                 AutoSize = true,
+                Padding = new Padding(15)
             };
 
             for (int i = 0; i < tableLayoutPanel.RowCount; i++)
@@ -66,32 +67,33 @@ namespace open_dust_monitor.src.forms
                 tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             }
 
-            ConfigureLabelProperties(LatestSnapshotLabel, "Loading..");
+            ConfigureLabelProperties(LatestSnapshotLabel);
+            tableLayoutPanel.SetColumnSpan(LatestSnapshotLabel, 2);
             tableLayoutPanel.Controls.Add(LatestSnapshotLabel, 0, 0);
 
-            ConfigureLabelProperties(RecentSnapshotsCountLabel, "Loading..");
+            ConfigureLabelProperties(RecentSnapshotsCountLabel);
             tableLayoutPanel.Controls.Add(RecentSnapshotsCountLabel, 0, 1);
 
-            ConfigureLabelProperties(BaselineSnapshotsCountLabel, "Loading..");
+            ConfigureLabelProperties(BaselineSnapshotsCountLabel);
             tableLayoutPanel.Controls.Add(BaselineSnapshotsCountLabel, 1, 1);
 
-            ConfigureLabelProperties(RecentSnapshotsTemperaturesLabel, "Loading..");
+            ConfigureLabelProperties(RecentSnapshotsTemperaturesLabel);
             tableLayoutPanel.Controls.Add(RecentSnapshotsTemperaturesLabel, 0, 2);
 
-            ConfigureLabelProperties(AlertThresholdTemperaturesLabel, "Loading..");
+            ConfigureLabelProperties(AlertThresholdTemperaturesLabel);
             tableLayoutPanel.Controls.Add(AlertThresholdTemperaturesLabel, 1, 2);
 
             this.Controls.Add(tableLayoutPanel);
             LogHandler.Logger.Debug("AddLabelTable complete");
         }
 
-        private void ConfigureLabelProperties(Label label, string text)
+        private static void ConfigureLabelProperties(Label label)
         {
             label.AutoSize = true;
             label.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label.ForeColor = Color.White;
-            label.Text = text;
-            label.Padding = new Padding(10);
+            label.Text = "Loading..";
+            label.Padding = new Padding(15);
         }
 
 
@@ -128,7 +130,7 @@ namespace open_dust_monitor.src.forms
             var latestTemperatureSnapshot = await Task.Run(() => _temperatureService.GetLatestTemperatureSnapshot());
             var recentSnapshots = TemperatureRepository.GetLoadedRecentSnapshots();
             var baselineSnapshots = TemperatureRepository.GetLoadedBaselineSnapshots();
-            LatestSnapshotLabel.Text = "Latest Snapshot: \n" + latestTemperatureSnapshot.ToString();
+            LatestSnapshotLabel.Text = TemperatureService.GetLatestSnapshotLabel(latestTemperatureSnapshot);
             RecentSnapshotsCountLabel.Text = TemperatureService.GetSnapshotCountsLabel(recentSnapshots, "Recent");
             RecentSnapshotsTemperaturesLabel.Text = TemperatureService.GetSnapshotTemperaturesLabel(recentSnapshots, "Recent");
             BaselineSnapshotsCountLabel.Text = TemperatureService.GetSnapshotCountsLabel(baselineSnapshots, "Baseline");

@@ -12,7 +12,6 @@ namespace open_dust_monitor
         {
             ApplicationConfiguration.Initialize();
             LogHandler.ConfigureLogger();
-            LogHandler.Logger.Information("Application launched.");
             Application.Run(new src.forms.MainForm());
         }
     }

@@ -70,7 +70,7 @@ namespace open_dust_monitor.repositories
         public static void SaveAndLoadBaselineSnapshot(TemperatureSnapshot snapshot, int maxSnapshotsForLoadRange)
         {
             var baselineSnapshotCountForLoadRange = GetSnapshotCountForCpuLoadRange(loadedBaselineSnapshots, snapshot.CpuLoadRange);
-            if (baselineSnapshotCountForLoadRange <= maxSnapshotsForLoadRange)
+            if (baselineSnapshotCountForLoadRange < maxSnapshotsForLoadRange)
             {
                 loadedBaselineSnapshots.Add(snapshot);
                 SaveSnapshotToCsv(snapshot, pathToBaselineSnapshotsCsv);

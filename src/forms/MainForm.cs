@@ -93,7 +93,7 @@ namespace open_dust_monitor.src.forms
             label.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label.ForeColor = Color.White;
             label.Text = "Loading..";
-            label.Padding = new Padding(15);
+            label.Padding = new Padding(10);
         }
 
 
@@ -135,6 +135,7 @@ namespace open_dust_monitor.src.forms
             RecentSnapshotsTemperaturesLabel.Text = TemperatureService.GetSnapshotTemperaturesLabel(recentSnapshots, "Recent");
             BaselineSnapshotsCountLabel.Text = TemperatureService.GetSnapshotCountsLabel(baselineSnapshots, "Baseline");
             AlertThresholdTemperaturesLabel.Text = TemperatureService.GetSnapshotAlertThresholdsLabel(baselineSnapshots);
+            MainNotifyIcon.Text = TemperatureService.GetLatestSnapshotLabel(latestTemperatureSnapshot);
             AlertIfTemperatureIsOutsideThreshold();
             LogHandler.Logger.Debug("UpdateFormWithCpuInfo complete");
         }

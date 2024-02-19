@@ -31,11 +31,7 @@ namespace open_dust_monitor.src.forms
         private void InitializeUi()
         {
             ConfigureMainForm();
-            AddLatestSnapshotLabel();
-            AddBaselineSnapshotsCountLabel();
-            AddAlertThresholdTemperaturesLabel();
-            AddRecentSnapshotsCountLabel();
-            AddRecentSnapshotsTemperaturesLabel();
+            AddLabelTable();
             AddMainNotifyIcon();
             AddMainTimer();
             LogHandler.Logger.Information("UI Initialized");
@@ -45,8 +41,9 @@ namespace open_dust_monitor.src.forms
         {
             this.Icon = new Icon(iconPath);
             this.Text = "Open Dust Monitor";
-            this.ClientSize = new Size(900, 750);
-            this.BackColor = SystemColors.ButtonHighlight;
+            this.AutoSize = true;
+            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            this.BackColor = Color.FromArgb(95, 95, 95);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Load += MainFormLoad;
             this.Resize += new EventHandler(MainForm_Minimize);
@@ -54,55 +51,49 @@ namespace open_dust_monitor.src.forms
             LogHandler.Logger.Debug("ConfigureMainForm complete");
         }
 
-        private void AddLatestSnapshotLabel()
+        private void AddLabelTable()
         {
-            LatestSnapshotLabel.AutoSize = true;
-            LatestSnapshotLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LatestSnapshotLabel.Location = new Point(20, 20);
-            LatestSnapshotLabel.Text = "Loading..";
-            this.Controls.Add(LatestSnapshotLabel);
-            LogHandler.Logger.Debug("AddLatestSnapshotLabel complete");
+            var tableLayoutPanel = new TableLayoutPanel
+            {
+                ColumnCount = 2,
+                RowCount = 5,
+                Dock = DockStyle.Fill,
+                AutoSize = true,
+            };
+
+            for (int i = 0; i < tableLayoutPanel.RowCount; i++)
+            {
+                tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            }
+
+            ConfigureLabelProperties(LatestSnapshotLabel, "Loading..");
+            tableLayoutPanel.Controls.Add(LatestSnapshotLabel, 0, 0);
+
+            ConfigureLabelProperties(RecentSnapshotsCountLabel, "Loading..");
+            tableLayoutPanel.Controls.Add(RecentSnapshotsCountLabel, 0, 1);
+
+            ConfigureLabelProperties(BaselineSnapshotsCountLabel, "Loading..");
+            tableLayoutPanel.Controls.Add(BaselineSnapshotsCountLabel, 1, 1);
+
+            ConfigureLabelProperties(RecentSnapshotsTemperaturesLabel, "Loading..");
+            tableLayoutPanel.Controls.Add(RecentSnapshotsTemperaturesLabel, 0, 2);
+
+            ConfigureLabelProperties(AlertThresholdTemperaturesLabel, "Loading..");
+            tableLayoutPanel.Controls.Add(AlertThresholdTemperaturesLabel, 1, 2);
+
+            this.Controls.Add(tableLayoutPanel);
+            LogHandler.Logger.Debug("AddLabelTable complete");
         }
 
-        private void AddRecentSnapshotsCountLabel()
+        private void ConfigureLabelProperties(Label label, string text)
         {
-            RecentSnapshotsCountLabel.AutoSize = true;
-            RecentSnapshotsCountLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            RecentSnapshotsCountLabel.Location = new Point(20, 200);
-            RecentSnapshotsCountLabel.Text = "Loading..";
-            this.Controls.Add(RecentSnapshotsCountLabel);
-            LogHandler.Logger.Debug("AddRecentSnapshotsCountLabel complete");
+            label.AutoSize = true;
+            label.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label.ForeColor = Color.White;
+            label.Text = text;
+            label.Padding = new Padding(10);
         }
 
-        private void AddBaselineSnapshotsCountLabel()
-        {
-            BaselineSnapshotsCountLabel.AutoSize = true;
-            BaselineSnapshotsCountLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BaselineSnapshotsCountLabel.Location = new Point(400, 200);
-            BaselineSnapshotsCountLabel.Text = "Loading..";
-            this.Controls.Add(BaselineSnapshotsCountLabel);
-            LogHandler.Logger.Debug("AddBaselineSnapshotsCountLabel complete");
-        }
-
-        private void AddRecentSnapshotsTemperaturesLabel()
-        {
-            RecentSnapshotsTemperaturesLabel.AutoSize = true;
-            RecentSnapshotsTemperaturesLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            RecentSnapshotsTemperaturesLabel.Location = new Point(20, 450);
-            RecentSnapshotsTemperaturesLabel.Text = "Loading..";
-            this.Controls.Add(RecentSnapshotsTemperaturesLabel);
-            LogHandler.Logger.Debug("AddRecentSnapshotsTemperaturesLabel complete");
-        }
-
-        private void AddAlertThresholdTemperaturesLabel()
-        {
-            AlertThresholdTemperaturesLabel.AutoSize = true;
-            AlertThresholdTemperaturesLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            AlertThresholdTemperaturesLabel.Location = new Point(400, 450);
-            AlertThresholdTemperaturesLabel.Text = "Loading..";
-            this.Controls.Add(AlertThresholdTemperaturesLabel);
-            LogHandler.Logger.Debug("AddAlertThresholdTemperaturesLabel complete");
-        }
 
         private void AddMainNotifyIcon()
         {

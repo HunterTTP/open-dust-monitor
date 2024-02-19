@@ -35,6 +35,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(284, 261);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             ResumeLayout(false);

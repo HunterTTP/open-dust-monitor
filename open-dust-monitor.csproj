@@ -15,8 +15,11 @@
 
   <ItemGroup>
     <Compile Remove="csv\**" />
+    <Compile Remove="images\logo\**" />
     <EmbeddedResource Remove="csv\**" />
+    <EmbeddedResource Remove="images\logo\**" />
     <None Remove="csv\**" />
+    <None Remove="images\logo\**" />
   </ItemGroup>
 
   <ItemGroup>

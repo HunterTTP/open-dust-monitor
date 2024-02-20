@@ -12,6 +12,7 @@ namespace open_dust_monitor.src.services
         private static readonly int minimumMonitoringMinutes = 120;
         private static readonly int maximumAlertSnapshots = minimumMonitoringMinutes * 60 / (snapshotIntervalMillis / 1000);
         private static readonly int userNotificationFrequencyHours = 72;
+        private static readonly float alertThresholdOffset = 7f;
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
         {
@@ -77,7 +78,7 @@ namespace open_dust_monitor.src.services
 
         public static float GetAlertThresholdTemperature(List<TemperatureSnapshot> snapshots)
         {
-            return (float)Math.Round(GetAverageTemperature(snapshots) + 5f);
+            return (float)Math.Round(GetAverageTemperature(snapshots) + alertThresholdOffset);
         }
 
         public static string GetLatestSnapshotLabel(TemperatureSnapshot snapshot)

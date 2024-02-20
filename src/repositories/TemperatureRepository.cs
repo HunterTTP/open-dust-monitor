@@ -1,7 +1,7 @@
-﻿using open_dust_monitor.models;
-using open_dust_monitor.src.Handler;
+﻿using open_dust_monitor.src.handler;
+using open_dust_monitor.src.models;
 
-namespace open_dust_monitor.repositories
+namespace open_dust_monitor.src.repositories
 {
     public class TemperatureRepository
     {

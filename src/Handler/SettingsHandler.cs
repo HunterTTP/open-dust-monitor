@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 
-namespace open_dust_monitor.src.Handler
+namespace open_dust_monitor.src.handler
 {
     public class SettingsHandler
     {

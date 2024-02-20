@@ -1,8 +1,8 @@
-﻿using open_dust_monitor.models;
-using open_dust_monitor.repositories;
-using open_dust_monitor.src.Handler;
+﻿using open_dust_monitor.src.handler;
+using open_dust_monitor.src.models;
+using open_dust_monitor.src.repositories;
 
-namespace open_dust_monitor.services
+namespace open_dust_monitor.src.services
 {
     public class TemperatureService
     {
@@ -10,7 +10,7 @@ namespace open_dust_monitor.services
         private readonly SettingsHandler _settingsHandler = InstanceHandler.GetSettingsHandler();
         private static readonly int snapshotIntervalMillis = 2000;
         private static readonly int minimumMonitoringMinutes = 120;
-        private static readonly int maximumAlertSnapshots = (minimumMonitoringMinutes * 60) / (snapshotIntervalMillis / 1000);
+        private static readonly int maximumAlertSnapshots = minimumMonitoringMinutes * 60 / (snapshotIntervalMillis / 1000);
         private static readonly int userNotificationFrequencyHours = 72;
 
         public TemperatureSnapshot GetLatestTemperatureSnapshot()
@@ -61,7 +61,7 @@ namespace open_dust_monitor.services
             {
                 return true;
             }
-            return (GetAverageTemperature(recentSnapshots) <= GetAlertThresholdTemperature(baselineSnapshots));
+            return GetAverageTemperature(recentSnapshots) <= GetAlertThresholdTemperature(baselineSnapshots);
         }
 
         public static float GetAverageTemperature(List<TemperatureSnapshot> snapshots)
@@ -151,7 +151,7 @@ namespace open_dust_monitor.services
 
         public bool WasUserRecentlyNotified()
         {
-            return _settingsHandler.UserLastNotified >= (DateTime.Now - TimeSpan.FromHours(userNotificationFrequencyHours));
+            return _settingsHandler.UserLastNotified >= DateTime.Now - TimeSpan.FromHours(userNotificationFrequencyHours);
         }
 
         public void UserWasNotified(DateTime dateTime)

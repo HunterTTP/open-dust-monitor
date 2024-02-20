@@ -1,7 +1,7 @@
 ﻿using LibreHardwareMonitor.Hardware;
-using open_dust_monitor.src.Handler;
+using open_dust_monitor.src.handler;
 
-namespace open_dust_monitor.services
+namespace open_dust_monitor.src.services
 {
     public class HardwareService
     {

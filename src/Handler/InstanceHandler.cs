@@ -1,7 +1,7 @@
-﻿using open_dust_monitor.repositories;
-using open_dust_monitor.services;
+﻿using open_dust_monitor.src.repositories;
+using open_dust_monitor.src.services;
 
-namespace open_dust_monitor.src.Handler
+namespace open_dust_monitor.src.handler
 {
     public class InstanceHandler
     {

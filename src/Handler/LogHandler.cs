@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace open_dust_monitor.src.Handler
+namespace open_dust_monitor.src.handler
 {
     internal class LogHandler
     {

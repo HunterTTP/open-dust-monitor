@@ -56,6 +56,7 @@ namespace open_dust_monitor.services
 
         public static bool IsAverageTemperatureWithinThreshold(List<TemperatureSnapshot> recentSnapshots, List<TemperatureSnapshot> baselineSnapshots)
         {
+            LogHandler.Logger.Debug("IsAverageTemperatureWithinThreshold recentSnapshots.Count=" + recentSnapshots.Count + "maximumAlertSnapshots=" + maximumAlertSnapshots);
             if (recentSnapshots.Count < maximumAlertSnapshots)
             {
                 return true;
@@ -70,6 +71,7 @@ namespace open_dust_monitor.services
                 .Select(snapshot => snapshot.CpuTemperature)
                 .DefaultIfEmpty(0)
                 .Average();
+            LogHandler.Logger.Debug("GetAverageTemperature recentAverageTemperature=" + recentAverageTemperature);
             return (float)Math.Round(recentAverageTemperature);
         }
 

@@ -144,7 +144,8 @@ namespace open_dust_monitor.src.forms
         {
             var areTemperaturesWithinThreshold = TemperatureService.AreRecentAverageTemperaturesWithinThreshold();
             var wasUserRecentlyNotified = _temperatureService.WasUserRecentlyNotified();
-            if (areTemperaturesWithinThreshold && !wasUserRecentlyNotified)
+            LogHandler.Logger.Information("AlertIfTemperatureIsOutsideThreshold areTemperaturesWithinThreshold=" + areTemperaturesWithinThreshold + " wasUserRecentlyNotified=" + wasUserRecentlyNotified);
+            if (!areTemperaturesWithinThreshold && !wasUserRecentlyNotified)
             {
                 var temperatureNotification = MessageBox.Show(
                     "Your PC has been running hotter than usual for the past few days." +

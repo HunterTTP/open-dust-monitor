@@ -25,6 +25,9 @@ namespace open_dust_monitor.src.forms
         private readonly NotifyIcon MainNotifyIcon = new();
         private readonly TableLayoutPanel topBar = new();
         private readonly string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
+        private readonly string minimizeButtonPath = Path.Combine(Application.StartupPath, "images", "minimizeButton.png");
+        private readonly string fullscreenButtonPath = Path.Combine(Application.StartupPath, "images", "fullscreenButton.png");
+        private readonly string closeButtonPath = Path.Combine(Application.StartupPath, "images", "closeButton.png");
 
         public MainForm()
         {
@@ -93,19 +96,28 @@ namespace open_dust_monitor.src.forms
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleLeft,
                 AutoSize = true,
-                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
+                Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             topBar.Controls.Add(topBarTitle, 1, 0);
             topBarTitle.MouseDown += new MouseEventHandler(DragHandler);
 
+            ImageList imageList = new ImageList
+            {
+                ImageSize = new Size(24, 24),
+                ColorDepth = ColorDepth.Depth32Bit
+            };
+            imageList.Images.Add("minimize", Properties.Resources.minimizeButton);
+            imageList.Images.Add("maximize", Properties.Resources.fullscreenButton);
+            imageList.Images.Add("close", Properties.Resources.closeButton);
+
             Button minimizeButton = new()
             {
-                Text = "_",
+                ImageList = imageList,
+                ImageIndex = imageList.Images.IndexOfKey("minimize"),
                 ForeColor = Color.White,
                 BackColor = Color.FromArgb(70, 70, 70),
                 Dock = DockStyle.Fill,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             minimizeButton.FlatAppearance.BorderSize = 0;
             minimizeButton.Click += MinimizeButtonClick;
@@ -113,12 +125,12 @@ namespace open_dust_monitor.src.forms
 
             Button maximizeButton = new()
             {
-                Text = "🗖",
+                ImageList = imageList,
+                ImageIndex = imageList.Images.IndexOfKey("maximize"),
                 ForeColor = Color.White,
                 BackColor = Color.FromArgb(70, 70, 70),
                 Dock = DockStyle.Fill,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
             };
             maximizeButton.FlatAppearance.BorderSize = 0;
             maximizeButton.Click += MaximizeButtonClick;
@@ -126,12 +138,12 @@ namespace open_dust_monitor.src.forms
 
             Button closeButton = new()
             {
-                Text = "X",
+                ImageList = imageList,
+                ImageIndex = imageList.Images.IndexOfKey("close"),
                 ForeColor = Color.White,
                 BackColor = Color.FromArgb(70, 70, 70),
                 Dock = DockStyle.Fill,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
+                FlatStyle = FlatStyle.Flat
             };
             closeButton.FlatAppearance.BorderSize = 0;
             closeButton.Click += CloseButtonClick;

@@ -24,10 +24,6 @@ namespace open_dust_monitor.src.forms
         private readonly System.Windows.Forms.Timer MainTimer = new();
         private readonly NotifyIcon MainNotifyIcon = new();
         private readonly TableLayoutPanel topBar = new();
-        private readonly string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
-        private readonly string minimizeButtonPath = Path.Combine(Application.StartupPath, "images", "minimizeButton.png");
-        private readonly string fullscreenButtonPath = Path.Combine(Application.StartupPath, "images", "fullscreenButton.png");
-        private readonly string closeButtonPath = Path.Combine(Application.StartupPath, "images", "closeButton.png");
 
         public MainForm()
         {
@@ -53,7 +49,7 @@ namespace open_dust_monitor.src.forms
 
         private void ConfigureMainForm()
         {
-            this.Icon = new Icon(iconPath);
+            this.Icon = Properties.Resources.logo_icon;
             this.Text = "Open Dust Monitor";
             this.AutoSize = true;
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -81,7 +77,7 @@ namespace open_dust_monitor.src.forms
 
             PictureBox topBarLogo = new()
             {
-                Image = Image.FromFile(iconPath),
+                Image = Properties.Resources.logo_image,
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 Height = 30,
                 Margin = new Padding(10)
@@ -199,7 +195,7 @@ namespace open_dust_monitor.src.forms
 
         private void AddMainNotifyIcon()
         {
-            MainNotifyIcon.Icon = new Icon(iconPath);
+            MainNotifyIcon.Icon = Properties.Resources.logo_icon;
             MainNotifyIcon.Text = "Loading..";
             MainNotifyIcon.Visible = true;
             MainNotifyIcon.MouseDown += new MouseEventHandler(NotifyIcon_Clicked);

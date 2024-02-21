@@ -6,6 +6,15 @@ namespace open_dust_monitor.src.forms
 {
     public partial class MainForm : Form
     {
+
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
         private readonly TemperatureService _temperatureService = InstanceHandler.GetTemperatureService();
         private readonly Label LatestSnapshotLabel = new();
         private readonly Label RecentSnapshotsCountLabel = new();
@@ -14,6 +23,7 @@ namespace open_dust_monitor.src.forms
         private readonly Label AlertThresholdTemperaturesLabel = new();
         private readonly System.Windows.Forms.Timer MainTimer = new();
         private readonly NotifyIcon MainNotifyIcon = new();
+        private readonly TableLayoutPanel topBar = new();
         private readonly string iconPath = Path.Combine(Application.StartupPath, "images", "logo.ico");
 
         public MainForm()
@@ -31,6 +41,7 @@ namespace open_dust_monitor.src.forms
         private void InitializeUi()
         {
             ConfigureMainForm();
+            AddTopBar();
             AddLabelTable();
             AddMainNotifyIcon();
             AddMainTimer();
@@ -46,9 +57,86 @@ namespace open_dust_monitor.src.forms
             this.BackColor = Color.FromArgb(95, 95, 95);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Load += MainFormLoad;
-            this.Resize += new EventHandler(MainForm_Minimize);
             this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
+            this.FormBorderStyle = FormBorderStyle.None;
             LogHandler.Logger.Debug("ConfigureMainForm complete");
+        }
+
+        private void AddTopBar()
+        {
+            topBar.ColumnCount = 5;
+            topBar.RowCount = 1;
+            topBar.Dock = DockStyle.Top;
+            topBar.AutoSize = true;
+            topBar.BackColor = Color.FromArgb(70, 70, 70);
+            topBar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
+            topBar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            topBar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
+            topBar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
+            topBar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
+            topBar.MouseDown += new MouseEventHandler(DragHandler);
+
+            PictureBox topBarLogo = new()
+            {
+                Image = Image.FromFile(iconPath),
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Height = 30,
+                Margin = new Padding(10)
+            };
+            topBar.Controls.Add(topBarLogo, 0, 0);
+            topBarLogo.MouseDown += new MouseEventHandler(DragHandler);
+
+            Label topBarTitle = new()
+            {
+                Text = "Open Dust Monitor",
+                ForeColor = Color.White,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleLeft,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            topBar.Controls.Add(topBarTitle, 1, 0);
+            topBarTitle.MouseDown += new MouseEventHandler(DragHandler);
+
+            Button minimizeButton = new()
+            {
+                Text = "_",
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(70, 70, 70),
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            minimizeButton.FlatAppearance.BorderSize = 0;
+            minimizeButton.Click += MinimizeButtonClick;
+            topBar.Controls.Add(minimizeButton, 2, 0);
+
+            Button maximizeButton = new()
+            {
+                Text = "🗖",
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(70, 70, 70),
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            maximizeButton.FlatAppearance.BorderSize = 0;
+            maximizeButton.Click += MaximizeButtonClick;
+            topBar.Controls.Add(maximizeButton, 3, 0);
+
+            Button closeButton = new()
+            {
+                Text = "X",
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(70, 70, 70),
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0)
+            };
+            closeButton.FlatAppearance.BorderSize = 0;
+            closeButton.Click += CloseButtonClick;
+            topBar.Controls.Add(closeButton, 4, 0);
+            this.Controls.Add(topBar);
         }
 
         private void AddLabelTable()
@@ -59,7 +147,7 @@ namespace open_dust_monitor.src.forms
                 RowCount = 5,
                 Dock = DockStyle.Fill,
                 AutoSize = true,
-                Padding = new Padding(15)
+                Padding = new Padding(15, topBar.Height + 10, 15, 15)
             };
 
             for (int i = 0; i < tableLayoutPanel.RowCount; i++)
@@ -167,20 +255,33 @@ namespace open_dust_monitor.src.forms
             }
         }
 
-        private void MainForm_Minimize(object? sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                ShowInTaskbar = false;
-            }
-        }
-
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
             _temperatureService.StopTemperatureMonitoring();
         }
 
+        private void MaximizeButtonClick(object? sender, EventArgs e)
+        {
+            MaximizeToggle();
+        }
+
+        private void CloseButtonClick(object? sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         private void NotifyIcon_Clicked(object? sender, MouseEventArgs e)
+        {
+            MinimizeToSysTray();
+        }
+
+        private void MinimizeButtonClick(object? sender, EventArgs e)
+        {
+            this.ShowInTaskbar = true;
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void MinimizeToSysTray()
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
@@ -192,6 +293,26 @@ namespace open_dust_monitor.src.forms
             {
                 this.WindowState = FormWindowState.Minimized;
                 this.ShowInTaskbar = false;
+            }
+        }
+
+        private void MaximizeToggle()
+        {
+            this.WindowState = this.WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized;
+        }
+
+        private void DragHandler(object? sender, MouseEventArgs e)
+        {
+            if (e.Clicks == 2)
+            {
+                MaximizeToggle();
+                return;
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                _ = SendMessage(this.Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
         }
     }

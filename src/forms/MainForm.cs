@@ -49,15 +49,15 @@ namespace open_dust_monitor.src.forms
 
         private void ConfigureMainForm()
         {
+            this.Opacity = 0;
             this.Icon = Properties.Resources.logo_icon;
             this.Text = "Open Dust Monitor";
             this.AutoSize = true;
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             this.BackColor = Color.FromArgb(95, 95, 95);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Load += MainFormLoad;
-            this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
             this.FormBorderStyle = FormBorderStyle.None;
+            this.Load += MainFormLoad;
             LogHandler.Logger.Debug("ConfigureMainForm complete");
         }
 
@@ -160,7 +160,7 @@ namespace open_dust_monitor.src.forms
 
             for (int i = 0; i < tableLayoutPanel.RowCount; i++)
             {
-                tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+                _ = tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             }
 
             ConfigureLabelProperties(LatestSnapshotLabel);
@@ -198,9 +198,24 @@ namespace open_dust_monitor.src.forms
             MainNotifyIcon.Icon = Properties.Resources.logo_icon;
             MainNotifyIcon.Text = "Loading..";
             MainNotifyIcon.Visible = true;
-            MainNotifyIcon.MouseDown += new MouseEventHandler(NotifyIcon_Clicked);
+            MainNotifyIcon.MouseClick += new MouseEventHandler(NotifyIcon_Clicked);
+            AddMainNotifyContextMenu();
             LogHandler.Logger.Debug("AddMainNotifyIcon complete");
         }
+
+        private void AddMainNotifyContextMenu()
+        {
+            ContextMenuStrip contextMenu = new ContextMenuStrip();
+            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("Exit Open Dust Monitor", null, ExitMenuItem_Click);
+            contextMenu.Items.Add(exitMenuItem);
+            MainNotifyIcon.ContextMenuStrip = contextMenu;
+        }
+
+        private void ExitMenuItem_Click(object? sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
 
         private void AddMainTimer()
         {
@@ -213,6 +228,7 @@ namespace open_dust_monitor.src.forms
         private void MainFormLoad(object? sender, EventArgs e)
         {
             _ = UpdateFormWithCpuInfo();
+            MinimizeToSysTray();
             LogHandler.Logger.Debug("MainFormLoad complete");
         }
 
@@ -263,11 +279,6 @@ namespace open_dust_monitor.src.forms
             }
         }
 
-        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
-        {
-            _temperatureService.StopTemperatureMonitoring();
-        }
-
         private void MaximizeButtonClick(object? sender, EventArgs e)
         {
             MaximizeToggle();
@@ -275,12 +286,15 @@ namespace open_dust_monitor.src.forms
 
         private void CloseButtonClick(object? sender, EventArgs e)
         {
-            this.Close();
+            MinimizeToSysTray();
         }
 
         private void NotifyIcon_Clicked(object? sender, MouseEventArgs e)
         {
-            MinimizeToSysTray();
+            if (e.Button == MouseButtons.Left)
+            {
+                MinimizeToSysTray();
+            }
         }
 
         private void MinimizeButtonClick(object? sender, EventArgs e)
@@ -296,6 +310,7 @@ namespace open_dust_monitor.src.forms
                 this.ShowInTaskbar = true;
                 this.WindowState = FormWindowState.Normal;
                 this.Activate();
+                this.Opacity = 100;
             }
             else
             {
